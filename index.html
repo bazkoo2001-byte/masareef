@@ -1,0 +1,4146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="مصاريف">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>مصاريف — إدارة المصاريف المشتركة</title>
+    <style>
+        /* ================================
+           🎨 المتغيرات والثيمات
+        ================================ */
+        :root {
+            --bg-primary: #0b1120;
+            --bg-secondary: #131c31;
+            --bg-card: #1a2438;
+            --bg-hover: #243049;
+            --bg-input: #1a2438;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #8b9bb4;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --accent-success: #10b981;
+            --accent-success-bg: rgba(16, 185, 129, 0.12);
+            --accent-warning: #f59e0b;
+            --accent-warning-bg: rgba(245, 158, 11, 0.12);
+            --accent-danger: #ef4444;
+            --accent-danger-bg: rgba(239, 68, 68, 0.12);
+            --accent-info: #06b6d4;
+            --color-primary: #6366f1;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-info: #06b6d4;
+            --border-color: #2a3854;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45);
+            --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.55);
+            --shadow-glow: 0 8px 24px rgba(99, 102, 241, 0.35);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 22px;
+            --radius-full: 999px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-top: env(safe-area-inset-top, 0px);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #eef1f7;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-hover: #f1f4f9;
+            --bg-input: #f4f6fb;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-success-bg: rgba(16, 185, 129, 0.1);
+            --accent-warning-bg: rgba(245, 158, 11, 0.1);
+            --accent-danger-bg: rgba(239, 68, 68, 0.1);
+            --border-color: #e2e8f0;
+            --border-subtle: rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+            --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.08);
+            --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+            --shadow-xl: 0 24px 48px rgba(15, 23, 42, 0.16);
+            --shadow-glow: 0 8px 24px rgba(99, 102, 241, 0.25);
+        }
+
+        /* ================================
+           🔧 الإعدادات العامة
+        ================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            min-height: 100dvh;
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior-y: contain;
+            padding: 16px;
+            padding-top: calc(16px + var(--safe-top));
+            padding-bottom: calc(16px + var(--safe-bottom));
+            transition: background 0.3s ease;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 12px; padding-top: calc(12px + var(--safe-top)); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ================================
+           🎯 الهيدر
+        ================================ */
+        .header {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 46px;
+            height: 46px;
+            background: var(--accent-gradient);
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: var(--shadow-glow);
+            flex-shrink: 0;
+        }
+
+        .logo-text h1 {
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .logo-text p {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .header-status-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: transform var(--transition);
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.92);
+        }
+
+        .status-badge {
+            padding: 7px 14px;
+            border-radius: var(--radius-full);
+            font-size: 12.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-hover);
+        }
+
+        .status-badge.admin {
+            background: var(--accent-success-bg);
+            border-color: transparent;
+            color: var(--accent-success);
+        }
+
+        .status-badge.user {
+            background: rgba(99, 102, 241, 0.12);
+            border-color: transparent;
+            color: var(--accent-primary);
+        }
+
+        .status-badge.guest {
+            background: rgba(148, 163, 184, 0.1);
+            border-color: transparent;
+            color: var(--text-muted);
+        }
+
+        .status-indicator {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ================================
+           🔘 الأزرار
+        ================================ */
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14.5px;
+            font-family: inherit;
+            transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 10px 28px rgba(99, 102, 241, 0.45);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 6px 18px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 6px 18px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-outline {
+            background: var(--bg-hover);
+            border: 1.5px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-card);
+            border-color: var(--accent-primary);
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 13px;
+            border-radius: var(--radius-sm);
+        }
+
+        .btn-icon {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            border-radius: var(--radius-sm);
+            font-size: 18px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            font-size: 11px;
+            font-weight: 700;
+            background: var(--color-danger);
+            color: white;
+            border-radius: var(--radius-full);
+            margin-right: 4px;
+        }
+
+        /* ================================
+           📊 تخطيط الصفحة
+        ================================ */
+        .main-grid {
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 22px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 18px;
+            transition: transform var(--transition), box-shadow var(--transition);
+            animation: cardIn 0.4s ease backwards;
+        }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* ================================
+           📝 النماذج والمدخلات
+        ================================ */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 13.5px;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-control[readonly] {
+            background: var(--bg-hover);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-group .form-control {
+            flex: 1;
+        }
+
+        /* ================================
+           📋 قوائم المستخدمين
+        ================================ */
+        .users-list {
+            list-style: none;
+        }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .user-item:hover {
+            transform: translateX(-4px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            font-size: 16px;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ================================
+           💰 لوحة الحسابات
+        ================================ */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-card {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .summary-card.positive {
+            border-right: 4px solid var(--accent-success);
+        }
+
+        .summary-card.negative {
+            border-right: 4px solid var(--accent-danger);
+        }
+
+        .summary-card.neutral {
+            border-right: 4px solid var(--text-muted);
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .summary-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .summary-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+        }
+
+        .summary-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .summary-label {
+            color: var(--text-muted);
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .summary-status {
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .summary-status.positive {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-success);
+        }
+
+        .summary-status.negative {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent-danger);
+        }
+
+        .summary-status.neutral {
+            background: rgba(148, 163, 184, 0.1);
+            color: var(--text-muted);
+        }
+
+        /* ================================
+           📊 جدول المصاريف
+        ================================ */
+        .expenses-table-wrapper {
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        .expenses-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .expenses-table thead {
+            background: var(--bg-hover);
+        }
+
+        .expenses-table th {
+            padding: 12px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .expenses-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .expenses-table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .expenses-table tbody tr:hover {
+            background: var(--bg-hover);
+        }
+
+        /* === بطاقات سجل المصاريف === */
+        .exp-group {
+            margin-bottom: 12px;
+        }
+        .exp-group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: var(--bg-hover);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background var(--transition);
+        }
+        .exp-group-header:active { background: var(--bg-card); }
+        .exp-group-info {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+        .exp-chevron {
+            font-size: 12px;
+            color: var(--text-muted);
+            width: 14px;
+        }
+        .exp-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+        .exp-group-name {
+            font-weight: 700;
+            font-size: 15px;
+        }
+        .exp-group-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .exp-group-total {
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--accent-primary);
+            direction: ltr;
+        }
+        .exp-group-total span {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .exp-group-body {
+            padding: 8px 0 4px;
+        }
+        .exp-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 13px;
+            margin-top: 8px;
+            margin-right: 14px;
+        }
+        .exp-card-top {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+        .exp-cat {
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
+            background: var(--bg-hover);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            flex-shrink: 0;
+        }
+        .exp-card-main {
+            flex: 1;
+            min-width: 0;
+        }
+        .exp-desc {
+            font-weight: 600;
+            font-size: 14.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .exp-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .exp-amount {
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--text-primary);
+            direction: ltr;
+            flex-shrink: 0;
+        }
+        .exp-amount span {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-right: 2px;
+        }
+        .exp-card-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .exp-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            flex: 1;
+        }
+        .exp-chip {
+            font-size: 11px;
+            padding: 3px 9px;
+            border-radius: var(--radius-full);
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .exp-del {
+            background: var(--accent-danger-bg);
+            color: var(--accent-danger);
+            border: none;
+            border-radius: var(--radius-sm);
+            width: 34px;
+            height: 34px;
+            cursor: pointer;
+            font-size: 15px;
+            flex-shrink: 0;
+            transition: transform var(--transition);
+        }
+        .exp-del:active { transform: scale(0.9); }
+
+        .exp-collapse-btn {
+            width: calc(100% - 14px);
+            margin: 12px 14px 4px 0;
+            padding: 10px;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background var(--transition);
+        }
+        .exp-collapse-btn:active {
+            background: var(--bg-card);
+            transform: scale(0.98);
+        }
+
+        /* زر الرجوع لأعلى العائم */
+        .scroll-top-btn {
+            position: fixed;
+            bottom: calc(20px + var(--safe-bottom));
+            left: 20px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            color: #fff;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: var(--shadow-glow);
+            z-index: 900;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity var(--transition), transform var(--transition);
+        }
+        .scroll-top-btn.visible {
+            display: flex;
+            opacity: 1;
+        }
+        .scroll-top-btn:active { transform: scale(0.9); }
+
+        /* === التقارير === */
+        .report-card {
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+        }
+        .report-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px;
+            cursor: pointer;
+        }
+        .report-name {
+            font-weight: 700;
+            font-size: 15px;
+        }
+        .report-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+        .report-chevron {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        .report-body {
+            padding: 14px;
+            border-top: 1px solid var(--border-subtle);
+            background: var(--bg-card);
+        }
+        .report-section-title {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: var(--accent-primary);
+        }
+        .report-settle-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: var(--bg-hover);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+        }
+        .report-settle-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .report-settle-names {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14.5px;
+        }
+        .report-arrow {
+            color: var(--text-muted);
+        }
+        .report-settle-amount {
+            font-weight: 800;
+            color: var(--color-success);
+            direction: ltr;
+            font-size: 15px;
+        }
+        .report-settle-amount span {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+        }
+
+        .category-badge.food { background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); }
+        .category-badge.transport { background: rgba(59, 130, 246, 0.1); color: var(--accent-primary); }
+        .category-badge.entertainment { background: rgba(139, 92, 246, 0.1); color: var(--accent-secondary); }
+        .category-badge.utilities { background: rgba(245, 158, 11, 0.1); color: var(--accent-warning); }
+        .category-badge.shopping { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
+        .category-badge.health { background: rgba(16, 185, 129, 0.1); color: var(--accent-success); }
+        .category-badge.other { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); }
+
+        /* ================================
+           🎛️ تبديل الأنماط
+        ================================ */
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-top: 8px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background: var(--bg-card);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        /* ================================
+           🔔 التنبيهات
+        ================================ */
+        .alert {
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--accent-success);
+            color: var(--accent-success);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--accent-warning);
+            color: var(--accent-warning);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--accent-danger);
+            color: var(--accent-danger);
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .alert-icon {
+            font-size: 20px;
+        }
+
+        /* ================================
+           🎭 المودال
+        ================================ */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 26px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-subtle);
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @media (max-width: 600px) {
+            .modal {
+                align-items: flex-end;
+                padding: 0;
+            }
+            .modal-content {
+                max-width: 100%;
+                border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+                padding: 24px 20px;
+                padding-bottom: calc(24px + var(--safe-bottom));
+                max-height: 92vh;
+                animation: sheetUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            @keyframes sheetUp {
+                from { transform: translateY(100%); }
+                to { transform: translateY(0); }
+            }
+            .modal-content::before {
+                content: '';
+                display: block;
+                width: 40px;
+                height: 4px;
+                background: var(--border-color);
+                border-radius: 999px;
+                margin: -8px auto 16px;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .modal-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-hover);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--accent-danger);
+            color: white;
+        }
+
+        /* ================================
+           📈 الإحصائيات
+        ================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 700px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 18px 14px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; left: 0;
+            height: 3px;
+            background: var(--accent-gradient);
+            opacity: 0.7;
+        }
+
+        .stat-card:active {
+            transform: scale(0.97);
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+            direction: ltr;
+        }
+
+        .stat-label {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* ================================
+           🎨 Activity Log
+        ================================ */
+        .activity-log {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: start;
+            gap: 12px;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ================================
+           🎯 صلاحيات
+        ================================ */
+        .admin-only {
+            display: none !important;
+        }
+
+        body.is-admin .admin-only {
+            display: block !important;
+        }
+
+        body.is-admin .admin-only.flex {
+            display: flex !important;
+        }
+
+        body.is-admin .admin-only.grid {
+            display: grid !important;
+        }
+
+        .user-only {
+            display: none !important;
+        }
+
+        body.is-user .user-only {
+            display: block !important;
+        }
+
+        body.is-user .user-only.flex {
+            display: flex !important;
+        }
+
+        .logged-in-only {
+            display: none !important;
+        }
+
+        body.is-logged-in .logged-in-only {
+            display: block !important;
+        }
+
+        body.is-logged-in .logged-in-only.flex {
+            display: flex !important;
+        }
+
+        .guest-only {
+            display: block !important;
+        }
+
+        body.is-logged-in .guest-only {
+            display: none !important;
+        }
+
+        /* ================================
+           🎭 Empty States
+        ================================ */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-subtext {
+            font-size: 13px;
+        }
+
+        /* ================================
+           🔄 طي وفرد الأقسام
+        ================================ */
+        .section-content {
+            max-height: 100000px;
+            overflow: visible;
+            transition: opacity 0.3s ease, margin-top 0.3s ease;
+            opacity: 1;
+            margin-top: 16px;
+        }
+
+        .section-content.collapsed {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            margin-top: 0;
+        }
+
+        .card-header.collapsible {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .card-header.collapsible:hover {
+            background: var(--bg-hover);
+            border-radius: 8px;
+            margin: -8px;
+            padding: 8px;
+        }
+
+        /* ================================
+           👥 تجميع حسب المستخدم
+        ================================ */
+        .user-group-header {
+            transition: all 0.2s ease;
+        }
+
+        .user-group-header:hover {
+            background: var(--bg-primary) !important;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-expense-row {
+            transition: all 0.3s ease;
+        }
+
+        .activity-user-header {
+            transition: all 0.2s ease;
+        }
+
+        /* ================================
+           📱 Responsive
+        ================================ */
+        @media (max-width: 768px) {
+            .header {
+                padding: 16px;
+            }
+
+            .logo-text h1 {
+                font-size: 18px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 24px;
+            }
+        }
+
+        /* ================================
+           🔄 Loading
+        ================================ */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ================================
+           🎨 Login Screen
+        ================================ */
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <!-- ================================
+         🔐 شاشة تسجيل الدخول
+    ================================ -->
+    <!-- ================================
+         🏠 شاشة اختيار الجروب
+    ================================ -->
+    <div id="group-screen" class="login-screen" style="display:none;">
+        <div class="container">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="login-icon">💰</div>
+                    <h2 class="login-title">مصاريف</h2>
+                    <p class="login-subtitle">أدخل كود المجموعة والرقم السري</p>
+                </div>
+
+                <form onsubmit="loginWithGroup(event)">
+                    <div class="form-group">
+                        <label class="form-label">🔑 كود المجموعة</label>
+                        <input type="text" id="group-code-input" class="form-control"
+                            placeholder="أدخل كود المجموعة" required autocomplete="off"
+                            style="text-align:center; font-size:20px; font-weight:700; letter-spacing:4px;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">🔐 الرقم السري</label>
+                        <input type="password" id="login-password" class="form-control"
+                            placeholder="أدخل رقمك السري" required autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%; margin-top:8px;">
+                        🚀 دخول
+                    </button>
+                </form>
+
+                <div style="margin: 20px 0; display:flex; align-items:center; gap:12px;">
+                    <div style="flex:1; height:1px; background:var(--border-color);"></div>
+                    <span style="color:var(--text-muted); font-size:13px;">أو</span>
+                    <div style="flex:1; height:1px; background:var(--border-color);"></div>
+                </div>
+
+                <button onclick="openCreateGroupModal()" class="btn btn-outline" style="width:100%;">
+                    ➕ إنشاء مجموعة جديدة
+                </button>
+                
+                <div style="margin-top:12px; text-align:center;">
+                    <button onclick="openRegisterModal()" class="btn btn-outline btn-sm" style="width:100%;">
+                        📝 طلب انضمام لمجموعة
+                    </button>
+                    <p style="font-size:11px; color:var(--text-muted); margin-top:6px;">
+                        سيتم مراجعة طلبك من قبل المشرف
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-screen" class="login-screen guest-only" style="display:none;">
+    </div>
+
+    <!-- ================================
+         🎯 المحتوى الرئيسي
+    ================================ -->
+    <div id="main-content" class="logged-in-only">
+        <div class="container">
+            <!-- الهيدر -->
+            <header class="header">
+                <div class="header-top">
+                    <div class="logo-section">
+                        <div class="logo-icon">💰</div>
+                        <div class="logo-text">
+                            <h1>مصاريف</h1>
+                            <p>إدارة المصاريف المشتركة</p>
+                        </div>
+                    </div>
+                    <button class="theme-toggle" onclick="toggleTheme()" title="تبديل الثيم">🌙</button>
+                </div>
+
+                <div class="header-status-row">
+                    <div class="status-badge" id="firebase-status">
+                        <span class="status-indicator"></span>
+                        <span id="connection-status">غير متصل</span>
+                    </div>
+                    <div class="status-badge" id="user-badge">
+                        <span class="status-indicator"></span>
+                        <span id="user-status">مستخدم</span>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <button class="btn btn-primary btn-sm admin-only" onclick="openUsersModal()" title="إدارة المستخدمين">
+                        👥 المستخدمين
+                    </button>
+                    <button class="btn btn-warning btn-sm admin-only" onclick="openRegistrationRequestsModal()" title="طلبات التسجيل">
+                        📥 الطلبات <span id="requests-badge" class="badge" style="display: none;"></span>
+                    </button>
+                    <button class="btn btn-outline btn-sm logged-in-only" onclick="openReportsModal()" title="تقارير الدورات السابقة">
+                        📊 التقارير
+                    </button>
+                    <button class="btn btn-outline btn-sm admin-only" onclick="openFirebaseConfigModal()">
+                        ⚙️ Firebase
+                    </button>
+                    <button class="btn btn-outline btn-sm user-only" onclick="openFirebaseConfigModal()">
+                        ⚙️ الإعدادات
+                    </button>
+                    <button class="btn btn-danger btn-sm logged-in-only" onclick="logoutUser()">
+                        🚪 خروج
+                    </button>
+                </div>
+            </header>
+
+            <!-- التنبيهات -->
+            <div id="alerts-container"></div>
+
+            <!-- الإحصائيات -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-total-expenses">0 ج.م</div>
+                    <div class="stat-label">إجمالي المصاريف</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-my-paid">0 ج.م</div>
+                    <div class="stat-label">أنا دفعت</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-my-owed">0 ج.م</div>
+                    <div class="stat-label">عليّ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-my-net">0 ج.م</div>
+                    <div class="stat-label">الصافي</div>
+                </div>
+            </div>
+
+            <!-- التخطيط الرئيسي -->
+            <div class="main-grid">
+                <!-- القسم الأيمن -->
+                <div class="right-section">
+                    <!-- إضافة مصروف (Users + Admin) -->
+                    <div class="card logged-in-only">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">💳</div>
+                                إضافة مصروف جديد
+                            </div>
+                        </div>
+                        <form id="form-add-expense" onsubmit="addExpense(event)">
+                            <div class="form-group">
+                                <label class="form-label">📅 التاريخ</label>
+                                <input type="date" id="expense-date" class="form-control" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">🏷️ الفئة</label>
+                                <select id="expense-category" class="form-control" required>
+                                    <option value="food">🍔 طعام ومشروبات</option>
+                                    <option value="transport">🚗 مواصلات</option>
+                                    <option value="entertainment">🎬 ترفيه</option>
+                                    <option value="utilities">💡 فواتير</option>
+                                    <option value="shopping">🛍️ تسوق</option>
+                                    <option value="health">⚕️ صحة</option>
+                                    <option value="other">📦 أخرى</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">💵 المبلغ</label>
+                                <input type="number" id="expense-amount" class="form-control" placeholder="0.00" step="0.01" required oninput="validateCustomSplit()" autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">📝 الوصف</label>
+                                <input type="text" id="expense-desc" class="form-control" placeholder="وصف المصروف" required autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">🎯 المشتركين في التحمل</label>
+                                
+                                <!-- نوع التقسيم -->
+                                <div style="margin-bottom: 16px; padding: 12px; background: var(--bg-hover); border-radius: 8px;">
+                                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 8px;">
+                                        <input type="radio" name="split-type" value="equal" checked onchange="toggleSplitType()">
+                                        <span style="font-weight: 500;">⚖️ تقسيم متساوي (افتراضي)</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                        <input type="radio" name="split-type" value="custom" onchange="toggleSplitType()">
+                                        <span style="font-weight: 500;">⚡ تقسيم مخصص</span>
+                                    </label>
+                                </div>
+
+                                <!-- Checkboxes للتقسيم المتساوي -->
+                                <div id="equal-split-section">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 8px;">
+                                        <p style="font-size: 12px; color: var(--text-muted); margin: 0;">
+                                            اختر المشاركين في التحمل
+                                        </p>
+                                        <button type="button" id="toggle-all-btn" onclick="toggleAllParticipants()" class="btn btn-outline btn-sm" style="white-space: nowrap; padding: 5px 12px; font-size: 12px;">
+                                            ✓ تحديد الكل
+                                        </button>
+                                    </div>
+                                    <div class="checkbox-group" id="participants-checkboxes"></div>
+                                </div>
+
+                                <!-- Inputs للتقسيم المخصص -->
+                                <div id="custom-split-section" style="display: none;">
+                                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+                                        حدد المبلغ الذي يتحمله كل شخص
+                                    </p>
+                                    <div id="participants-custom-inputs" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                                    <div id="split-validation" style="margin-top: 12px; padding: 8px; border-radius: 6px; font-size: 13px; font-weight: 500;"></div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-success" style="width: 100%;">
+                                ✅ حفظ المصروف
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- لوحة الحسابات -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">💰</div>
+                                لوحة الحسابات
+                            </div>
+                            <button class="btn btn-danger btn-sm admin-only" onclick="openResetModal()">
+                                🔄 تصفير العداد
+                            </button>
+                        </div>
+                        <div class="summary-grid" id="dashboard"></div>
+                    </div>
+
+                    <!-- التسوية النهائية -->
+                    <div class="card logged-in-only">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">💰</div>
+                                التسوية النهائية (من يدفع لمين)
+                            </div>
+                        </div>
+                        <div id="settlements-dashboard" style="padding: 16px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- سجل المصاريف -->
+            <div class="card">
+                <div class="card-header" style="cursor: pointer;" onclick="toggleSection('expenses-log')">
+                    <div class="card-title">
+                        <div class="card-icon">📊</div>
+                        سجل المصاريف
+                    </div>
+                    <button class="btn btn-outline btn-sm" id="toggle-expenses-log" style="pointer-events: none;">
+                        ▼ عرض
+                    </button>
+                </div>
+
+                <div class="section-content collapsed" id="expenses-log-content" style="padding: 14px;">
+                    <div id="expenses-log-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال إنشاء مجموعة جديدة -->
+    <div class="modal" id="create-group-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">➕ إنشاء مجموعة جديدة</h3>
+                <button class="modal-close" onclick="closeCreateGroupModal()">✕</button>
+            </div>
+            <form onsubmit="createGroup(event)">
+                <div class="form-group">
+                    <label class="form-label">🏷️ اسم المجموعة</label>
+                    <input type="text" id="new-group-name" class="form-control" placeholder="مثال: شلة الأصدقاء" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">🔑 كود المجموعة</label>
+                    <input type="text" id="new-group-code" class="form-control" placeholder="اختر كود سهل (أرقام أو حروف)" required autocomplete="off" style="letter-spacing:3px; font-weight:700;">
+                    <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">الكود بيدخله أعضاء المجموعة عشان يوصلوا</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">👑 اسم المشرف (أنت)</label>
+                    <input type="text" id="new-group-admin-name" class="form-control" placeholder="اسمك" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">🔐 رقم سري للمشرف</label>
+                    <input type="password" id="new-group-admin-pass" class="form-control" placeholder="رقم سري خاص بك" required autocomplete="new-password" minlength="4">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">
+                    🚀 إنشاء المجموعة
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================================
+         🎭 المودالز
+    ================================ -->
+
+    <!-- مودال Firebase Config -->
+    <div class="modal" id="firebase-config-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">⚙️ إعداد Firebase</h3>
+                <button class="modal-close" onclick="closeFirebaseConfigModal()">✕</button>
+            </div>
+            
+            <div id="config-status" style="padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; margin-bottom: 16px; background: rgba(148, 163, 184, 0.1); color: var(--text-muted);">
+                غير متصل بـ Firebase
+            </div>
+
+            <form onsubmit="saveFirebaseConfig(event)">
+                <div class="form-group admin-only">
+                    <label class="form-label">اسم المشرف (Admin)</label>
+                    <input type="text" id="config-adminName" class="form-control" placeholder="مثال: على" required>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                        هذا الاسم سيظهر للجميع وسيستخدم في الحسابات
+                    </p>
+                </div>
+                
+                <div class="form-group user-only">
+                    <label class="form-label">اسم المشرف (Admin)</label>
+                    <input type="text" id="config-adminName-readonly" class="form-control" readonly>
+                </div>
+                
+                <hr style="border: none; border-top: 1px solid var(--border-color); margin: 20px 0;">
+                
+                <div class="form-group">
+                    <label class="form-label">API Key</label>
+                    <input type="text" id="config-apiKey" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Auth Domain</label>
+                    <input type="text" id="config-authDomain" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Database URL</label>
+                    <input type="text" id="config-databaseURL" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Project ID</label>
+                    <input type="text" id="config-projectId" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Storage Bucket</label>
+                    <input type="text" id="config-storageBucket" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Messaging Sender ID</label>
+                    <input type="text" id="config-messagingSenderId" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">App ID</label>
+                    <input type="text" id="config-appId" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary admin-only" style="width: 100%;">
+                    💾 حفظ واتصال
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- مودال تصفير العداد -->
+    <div class="modal" id="reset-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">⚠️ تصفير العداد</h3>
+                <button class="modal-close" onclick="closeResetModal()">✕</button>
+            </div>
+            
+            <div class="alert alert-warning">
+                <span class="alert-icon">⚠️</span>
+                <div>
+                    <strong>تحذير!</strong>
+                    <p style="margin-top: 4px; font-size: 13px;">سيتم حفظ جميع البيانات الحالية في الأرشيف وبدء فترة جديدة من الصفر.</p>
+                </div>
+            </div>
+
+            <form onsubmit="confirmReset(event)">
+                <div class="form-group">
+                    <label class="form-label">اسم الفترة الجديدة</label>
+                    <input type="text" id="reset-period-name" class="form-control" placeholder="مثال: فبراير 2025" required autocomplete="off">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">تأكيد برقم Admin السري (101093)</label>
+                    <input type="password" id="reset-confirm-password" class="form-control" placeholder="أدخل رقم Admin للتأكيد" required autocomplete="off">
+                </div>
+                
+                <button type="submit" class="btn btn-danger" style="width: 100%;">
+                    🔄 تأكيد التصفير
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- مودال تعديل اسم المستخدم -->
+    <div class="modal" id="edit-user-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">✏️ تعديل بيانات المستخدم</h3>
+                <button class="modal-close" onclick="closeEditUserModal()">✕</button>
+            </div>
+            
+            <form onsubmit="saveUserData(event)">
+                <div class="form-group">
+                    <label class="form-label">👤 الاسم</label>
+                    <input type="text" id="edit-user-name" class="form-control" placeholder="أدخل الاسم" required autocomplete="off">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">🔐 الرقم السري الحالي</label>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="text" id="current-password-display" class="form-control" readonly style="flex:1; font-family: monospace; letter-spacing: 2px;">
+                        <button type="button" onclick="toggleCurrentPassword()" class="btn btn-outline btn-sm" style="white-space: nowrap;" id="toggle-pw-btn">👁️ عرض</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">🔑 رقم سري جديد (اختياري)</label>
+                    <input type="text" id="edit-user-password" class="form-control" placeholder="اتركه فارغاً إذا لا تريد تغييره" autocomplete="off">
+                </div>
+                
+                <input type="hidden" id="edit-user-id">
+                <input type="hidden" id="edit-user-current-raw">
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    💾 حفظ التعديل
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- مودال إضافة مستخدم جديد -->
+    <div class="modal" id="add-user-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">➕ إضافة مستخدم جديد</h3>
+                <button class="modal-close" onclick="closeAddUserModal()">✕</button>
+            </div>
+            
+            <form onsubmit="addUser(event)">
+                <div class="form-group">
+                    <label class="form-label">الاسم</label>
+                    <input type="text" id="new-user-name" class="form-control" placeholder="اسم المستخدم" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الرقم السري</label>
+                    <input type="text" id="new-user-password" class="form-control" placeholder="الرقم السري" required autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    ➕ إضافة مستخدم
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- مودال قائمة المستخدمين -->
+    <div class="modal" id="users-modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 class="modal-title">👥 إدارة المستخدمين</h3>
+                <button class="modal-close" onclick="closeUsersModal()">✕</button>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <button class="btn btn-success" onclick="closeUsersModal(); openAddUserModal();" style="width: 100%;">
+                    ➕ إضافة مستخدم جديد
+                </button>
+            </div>
+            
+            <ul class="users-list" id="users-modal-list" style="max-height: 500px; overflow-y: auto;"></ul>
+        </div>
+    </div>
+
+    <!-- مودال التقارير -->
+    <div class="modal" id="reports-modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 class="modal-title">📊 تقارير الدورات السابقة</h3>
+                <button class="modal-close" onclick="closeReportsModal()">✕</button>
+            </div>
+            <div id="reports-container"></div>
+        </div>
+    </div>
+
+    <!-- مودال تسجيل حساب جديد -->
+    <div class="modal" id="register-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">➕ تسجيل حساب جديد</h3>
+                <button class="modal-close" onclick="closeRegisterModal()">✕</button>
+            </div>
+            <div style="padding: 12px; background: rgba(6,182,212,0.1); border-radius: var(--radius-sm); margin-bottom: 16px; font-size: 13px; color: var(--text-secondary);">
+                ℹ️ سيتم مراجعة طلبك من قبل المشرف، وستتمكن من الدخول بعد الموافقة
+            </div>
+            <form onsubmit="submitRegistration(event)">
+                <div class="form-group">
+                    <label class="form-label">👤 الاسم</label>
+                    <input type="text" id="register-name" class="form-control" placeholder="أدخل اسمك" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">🔐 الرقم السري</label>
+                    <input type="password" id="register-password" class="form-control" placeholder="اختر رقم سري" required minlength="4" autocomplete="new-password">
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">على الأقل 4 أرقام</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">🔐 تأكيد الرقم السري</label>
+                    <input type="password" id="register-password-confirm" class="form-control" placeholder="أعد إدخال الرقم السري" required autocomplete="new-password">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    📤 إرسال الطلب
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- مودال طلبات التسجيل (Admin) -->
+    <div class="modal" id="registration-requests-modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 class="modal-title">📥 طلبات التسجيل</h3>
+                <button class="modal-close" onclick="closeRegistrationRequestsModal()">✕</button>
+            </div>
+            <div id="registration-requests-container"></div>
+        </div>
+    </div>
+
+    <!-- ================================
+         🔥 Firebase SDK + JavaScript
+    ================================ -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, push, onValue, remove, set, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // ================================
+        // 🔐 الأمان والتشفير
+        // ================================
+        const ADMIN_PASSWORD_HASH = '5cbc023289bf7794bfecfd3a80c3f9e36e23c9d8a2766d764d2cf020e0426e81'; // 101093
+        
+        async function hashPassword(password) {
+            const msgBuffer = new TextEncoder().encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // ================================
+        // 💾 متغيرات عامة
+        // ================================
+        let app = null;
+        let db = null;
+        let isFirebaseSetup = false;
+        let currentUser = null;
+        let allUsers = {};
+        let allExpenses = {};
+        let allLoans = {};
+        let allRegistrationRequests = {};
+        let allArchive = {};
+        let currentGroupCode = null; // كود الجروب الحالي
+
+        window.hashPassword = hashPassword;
+
+        // ================================
+        // 🚀 التهيئة
+        // ================================
+        window.addEventListener('DOMContentLoaded', async function() {
+            // أُظهر شاشة الجروب أولاً دائماً
+            showGroupScreen();
+            // بعدين حمّل Firebase وابدأ
+            await loadFirebaseConfigFromStorage();
+            restoreSectionsState();
+            document.getElementById('expense-date').valueAsDate = new Date();
+        });
+
+        // ================================
+        // ⚙️ Firebase Config
+        // ================================
+        // Firebase Config الثابت (يمكن تغييره من الواجهة)
+        const DEFAULT_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDjw6I28ThtT4sxStXdOUM4ftXlccK5FJU",
+            authDomain: "expenses-c4791.firebaseapp.com",
+            databaseURL: "https://expenses-c4791-default-rtdb.firebaseio.com",
+            projectId: "expenses-c4791",
+            storageBucket: "expenses-c4791.firebasestorage.app",
+            messagingSenderId: "753807744189",
+            appId: "1:753807744189:web:10c4cef3a6ffb61d036bd4",
+            measurementId: "G-LFM0K5MHZ4"
+        };
+        
+        const DEFAULT_ADMIN_NAME = "على";
+        let adminName = DEFAULT_ADMIN_NAME;
+        window.adminName = adminName;
+
+        async function loadFirebaseConfigFromStorage() {
+            try {
+                let storedConfig = null;
+                let storedAdminName = null;
+                
+                // محاولة التحميل من persistent storage أولاً
+                try {
+                    if (window.storage) {
+                        const configResult = await window.storage.get('firebase-config');
+                        const nameResult = await window.storage.get('admin-name');
+                        
+                        if (configResult && configResult.value) {
+                            storedConfig = JSON.parse(configResult.value);
+                        }
+                        if (nameResult && nameResult.value) {
+                            storedAdminName = nameResult.value;
+                        }
+                    }
+                } catch (storageError) {
+                    console.log('Persistent storage not available, using localStorage');
+                }
+                
+                // Fallback إلى localStorage
+                if (!storedConfig) {
+                    const localConfig = localStorage.getItem('firebase-config');
+                    if (localConfig) {
+                        storedConfig = JSON.parse(localConfig);
+                    }
+                }
+                
+                if (!storedAdminName) {
+                    storedAdminName = localStorage.getItem('admin-name');
+                }
+                
+                // تعيين اسم Admin
+                if (storedAdminName) {
+                    adminName = storedAdminName;
+                    window.adminName = adminName;
+                }
+                document.getElementById('config-adminName').value = adminName;
+                
+                // تهيئة Firebase
+                const configToUse = storedConfig || DEFAULT_FIREBASE_CONFIG;
+                initializeFirebaseWithConfig(configToUse);
+                
+                // تعبئة النموذج
+                document.getElementById('config-apiKey').value = configToUse.apiKey;
+                document.getElementById('config-authDomain').value = configToUse.authDomain;
+                document.getElementById('config-databaseURL').value = configToUse.databaseURL;
+                document.getElementById('config-projectId').value = configToUse.projectId;
+                document.getElementById('config-storageBucket').value = configToUse.storageBucket;
+                document.getElementById('config-messagingSenderId').value = configToUse.messagingSenderId;
+                document.getElementById('config-appId').value = configToUse.appId;
+                
+            } catch (error) {
+                // في حالة فشل كل شيء، استخدم Config الثابت
+                console.log('Using default config', error);
+                adminName = DEFAULT_ADMIN_NAME;
+                window.adminName = adminName;
+                initializeFirebaseWithConfig(DEFAULT_FIREBASE_CONFIG);
+                document.getElementById('config-adminName').value = DEFAULT_ADMIN_NAME;
+                
+                // تعبئة النموذج بالقيم الافتراضية
+                document.getElementById('config-apiKey').value = DEFAULT_FIREBASE_CONFIG.apiKey;
+                document.getElementById('config-authDomain').value = DEFAULT_FIREBASE_CONFIG.authDomain;
+                document.getElementById('config-databaseURL').value = DEFAULT_FIREBASE_CONFIG.databaseURL;
+                document.getElementById('config-projectId').value = DEFAULT_FIREBASE_CONFIG.projectId;
+                document.getElementById('config-storageBucket').value = DEFAULT_FIREBASE_CONFIG.storageBucket;
+                document.getElementById('config-messagingSenderId').value = DEFAULT_FIREBASE_CONFIG.messagingSenderId;
+                document.getElementById('config-appId').value = DEFAULT_FIREBASE_CONFIG.appId;
+            }
+        }
+
+        window.saveFirebaseConfig = async function(event) {
+            event.preventDefault();
+            
+            const adminName = document.getElementById('config-adminName').value.trim();
+            
+            const config = {
+                apiKey: document.getElementById('config-apiKey').value,
+                authDomain: document.getElementById('config-authDomain').value,
+                databaseURL: document.getElementById('config-databaseURL').value,
+                projectId: document.getElementById('config-projectId').value,
+                storageBucket: document.getElementById('config-storageBucket').value,
+                messagingSenderId: document.getElementById('config-messagingSenderId').value,
+                appId: document.getElementById('config-appId').value
+            };
+
+            try {
+                // محاولة الحفظ في persistent storage
+                try {
+                    if (window.storage) {
+                        await window.storage.set('firebase-config', JSON.stringify(config));
+                        await window.storage.set('admin-name', adminName);
+                    } else {
+                        throw new Error('Storage not available');
+                    }
+                } catch (storageError) {
+                    // Fallback إلى localStorage
+                    console.log('Using localStorage fallback');
+                    localStorage.setItem('firebase-config', JSON.stringify(config));
+                    localStorage.setItem('admin-name', adminName);
+                }
+                
+                // تحديث المتغير العام
+                window.adminName = adminName;
+                
+                // تهيئة Firebase
+                initializeFirebaseWithConfig(config);
+                
+                // تحديث اسم Admin في Firebase إذا كان مسجل دخول
+                if (currentUser && currentUser.role === 'admin') {
+                    currentUser.name = adminName;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    if (db) {
+                        const adminRef = ref(db, 'users/admin');
+                        await set(adminRef, {
+                            name: adminName,
+                            role: 'admin',
+                            passwordHash: currentUser.passwordHash
+                        });
+                    }
+                    
+                    applyUserRole();
+                }
+                
+                showAlert('تم حفظ الإعدادات بنجاح! 🎉', 'success');
+                closeFirebaseConfigModal();
+            } catch (error) {
+                console.error('Error saving config:', error);
+                showAlert('حدث خطأ في حفظ الإعدادات: ' + error.message, 'danger');
+            }
+        };
+
+        function initializeFirebaseWithConfig(config) {
+            try {
+                if (app) return;
+                
+                app = initializeApp(config);
+                db = getDatabase(app);
+                isFirebaseSetup = true;
+                
+                document.getElementById('connection-status').textContent = 'متصل';
+                document.getElementById('firebase-status').style.background = 'rgba(16, 185, 129, 0.1)';
+                document.getElementById('firebase-status').style.borderColor = 'var(--accent-success)';
+                document.getElementById('firebase-status').style.color = 'var(--accent-success)';
+                
+                document.getElementById('config-status').style.background = 'rgba(16, 185, 129, 0.1)';
+                document.getElementById('config-status').style.color = 'var(--accent-success)';
+                document.getElementById('config-status').textContent = '✅ متصل بـ Firebase';
+                
+                // Migration أولاً ثم تحقق من الجروب المحفوظ
+                migrateOldData().then(() => {
+                    const savedGroupCode = localStorage.getItem('currentGroupCode');
+                    if (savedGroupCode) {
+                        currentGroupCode = savedGroupCode;
+                        listenToData();
+                    }
+                    checkLoginStatus();
+                });
+
+            } catch (error) {
+                console.error('Firebase error:', error);
+                showAlert('فشل الاتصال بـ Firebase', 'danger');
+            }
+        }
+
+        function groupPath(sub) {
+            return `groups/${currentGroupCode}/${sub}`;
+        }
+
+        function listenToData() {
+            if (!db || !currentGroupCode) return;
+
+            // الاستماع للمستخدمين
+            onValue(ref(db, groupPath('users')), (snapshot) => {
+                allUsers = snapshot.val() || {};
+                updateParticipantsCheckboxes();
+                const usersModal = document.getElementById('users-modal');
+                if (usersModal && usersModal.classList.contains('active')) {
+                    updateUsersModalList();
+                }
+            });
+
+            // الاستماع للمصاريف
+            let expensesFirstLoad = true;
+            let knownExpenseIds = new Set();
+            onValue(ref(db, groupPath('expenses')), (snapshot) => {
+                allExpenses = snapshot.val() || {};
+                const currentIds = Object.keys(allExpenses);
+                if (expensesFirstLoad) {
+                    knownExpenseIds = new Set(currentIds);
+                    expensesFirstLoad = false;
+                } else {
+                    currentIds.forEach(id => {
+                        if (!knownExpenseIds.has(id)) {
+                            const exp = allExpenses[id];
+                            if (exp.paidBy !== currentUser?.id) {
+                                const payerName = allUsers[exp.paidBy]?.name || 'أحد الأعضاء';
+                                showAlert(`💳 ${payerName} أضاف مصروف: ${exp.description || ''} (${parseFloat(exp.amount).toFixed(2)} ج.م)`, 'success');
+                            }
+                            knownExpenseIds.add(id);
+                        }
+                    });
+                    knownExpenseIds = new Set(currentIds);
+                }
+                updateDashboard();
+                updateSettlementsDashboard();
+                updateExpensesLog();
+                updateStats();
+            });
+
+            // الاستماع لطلبات التسجيل
+            onValue(ref(db, groupPath('registration_requests')), (snapshot) => {
+                allRegistrationRequests = snapshot.val() || {};
+                updateRegistrationRequestsBadge();
+            });
+
+            // الاستماع للأرشيف
+            onValue(ref(db, groupPath('archive')), (snapshot) => {
+                allArchive = snapshot.val() || {};
+            });
+        }
+
+        // ================================
+        // 🏠 نظام الجروبات
+        // ================================
+        const DEFAULT_GROUP_CODE = '201010';
+        const ALT_GROUP_CODE = '221010'; // كود بديل مقبول
+        const DEFAULT_GROUP_NAME = 'مصاريف السكن';
+
+        function showGroupScreen() {
+            document.getElementById('group-screen').style.display = 'flex';
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'none';
+        }
+
+        function showLoginScreen(groupName) {
+            // نفس شاشة الجروب — مش محتاجين شاشة منفصلة
+            showGroupScreen();
+        }
+
+        window.backToGroupScreen = function() {
+            currentGroupCode = null;
+            localStorage.removeItem('currentGroupCode');
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            document.getElementById('group-code-input').value = '';
+            document.getElementById('login-password').value = '';
+            showGroupScreen();
+        };
+
+        window.loginWithGroup = async function(event) {
+            event.preventDefault();
+            
+            if (!isFirebaseSetup || !db) {
+                showAlert('جاري الاتصال... حاول مرة أخرى', 'warning');
+                return;
+            }
+
+            let code = document.getElementById('group-code-input').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            if (!code || !password) return;
+
+            try {
+                // تحقق من وجود الجروب — لو مش موجود جرّب migration
+                let groupSnap = await get(ref(db, `groups/${code}/info`));
+                
+                if (!groupSnap.exists()) {
+                    // لو الكود هو الكود الافتراضي أو البديل، اعمل migration أولاً
+                    if (code === DEFAULT_GROUP_CODE || code === ALT_GROUP_CODE) {
+                        showAlert('🔄 جاري تجهيز المجموعة...', 'info');
+                        await migrateOldData();
+                        // جرّب الكود الافتراضي لو الكود البديل مكنش موجود
+                        groupSnap = await get(ref(db, `groups/${DEFAULT_GROUP_CODE}/info`));
+                        if (groupSnap.exists()) {
+                            // عدّل الكود للافتراضي فعليًا مش بس في الحقل
+                            code = DEFAULT_GROUP_CODE;
+                            document.getElementById('group-code-input').value = DEFAULT_GROUP_CODE;
+                        }
+                    }
+                    
+                    if (!groupSnap.exists()) {
+                        showAlert('❌ كود المجموعة غير صحيح', 'danger');
+                        return;
+                    }
+                }
+
+                // تحقق من الرقم السري
+                const passwordHash = await hashPassword(password);
+                const usersSnap = await get(ref(db, `groups/${code}/users`));
+                const users = usersSnap.val() || {};
+
+                let found = null;
+
+                // أولاً: دوّر في مستخدمي الجروب اللي دخلت بيه
+                for (const userId in users) {
+                    if (users[userId].passwordHash === passwordHash) {
+                        found = { id: userId, ...users[userId] };
+                        break;
+                    }
+                }
+
+                // ثانياً: لو مفيش — دوّر في البيانات القديمة (قبل نظام الجروبات)
+                // بيشمل أي مستخدم قديم، مش بس الأدمن اللي رقمه السري معروف
+                if (!found && (code === DEFAULT_GROUP_CODE || code === ALT_GROUP_CODE)) {
+                    const oldUsersSnap = await get(ref(db, 'users'));
+                    const oldUsers = oldUsersSnap.val() || {};
+                    for (const userId in oldUsers) {
+                        if (oldUsers[userId].passwordHash === passwordHash) {
+                            found = { id: userId, ...oldUsers[userId] };
+                            break;
+                        }
+                    }
+
+                    // لو لسه مفيش ولقيت الرقم السري بتاع الأدمن الافتراضي
+                    if (!found && passwordHash === ADMIN_PASSWORD_HASH) {
+                        found = {
+                            id: 'admin',
+                            name: 'على',
+                            role: 'admin',
+                            passwordHash: passwordHash
+                        };
+                    }
+
+                    // لو اتلاقى حد بأي طريقة من البيانات القديمة، تأكد إن النقل تم
+                    if (found) {
+                        await migrateOldData();
+                        // أضف/حدّث المستخدم في الجروب الحالي لو مش موجود فيه أصلاً
+                        await set(ref(db, `groups/${DEFAULT_GROUP_CODE}/users/${found.id}`), {
+                            name: found.name,
+                            role: found.role || 'user',
+                            passwordHash: found.passwordHash
+                        });
+                    }
+                }
+
+                if (!found) {
+                    showAlert('❌ الرقم السري غير صحيح', 'danger');
+                    document.getElementById('login-password').value = '';
+                    return;
+                }
+
+                // دخول ناجح
+                currentGroupCode = code;
+                localStorage.setItem('currentGroupCode', code);
+                currentUser = {
+                    id: found.id,
+                    name: found.name,
+                    role: found.role || 'user',
+                    passwordHash: passwordHash
+                };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                applyUserRole();
+                showAlert(`مرحباً ${found.name}! ${found.role === 'admin' ? '👑' : '👋'}`, 'success');
+
+            } catch (error) {
+                showAlert('حدث خطأ: ' + error.message, 'danger');
+            }
+        };
+
+        window.loginUser = window.loginWithGroup;
+        window.enterGroup = window.loginWithGroup;
+
+        window.openCreateGroupModal = function() {
+            document.getElementById('create-group-modal').classList.add('active');
+        };
+
+        window.closeCreateGroupModal = function() {
+            document.getElementById('create-group-modal').classList.remove('active');
+        };
+
+        window.createGroup = async function(event) {
+            event.preventDefault();
+            const groupName = document.getElementById('new-group-name').value.trim();
+            const groupCode = document.getElementById('new-group-code').value.trim();
+            const adminName = document.getElementById('new-group-admin-name').value.trim();
+            const adminPass = document.getElementById('new-group-admin-pass').value;
+
+            if (!db) {
+                showAlert('يرجى إعداد Firebase أولاً', 'warning');
+                return;
+            }
+
+            try {
+                // تحقق إن الكود مش مستخدم
+                const existing = await get(ref(db, `groups/${groupCode}/info`));
+                if (existing.exists()) {
+                    showAlert('❌ هذا الكود مستخدم بالفعل، اختر كوداً آخر', 'danger');
+                    return;
+                }
+
+                const passwordHash = await hashPassword(adminPass);
+                const adminId = 'admin_' + Date.now();
+
+                // إنشاء الجروب
+                await set(ref(db, `groups/${groupCode}/info`), {
+                    name: groupName,
+                    code: groupCode,
+                    createdAt: Date.now()
+                });
+
+                // إنشاء مستخدم الأدمن
+                await set(ref(db, `groups/${groupCode}/users/${adminId}`), {
+                    name: adminName,
+                    role: 'admin',
+                    passwordHash: passwordHash,
+                    passwordRaw: adminPass
+                });
+
+                closeCreateGroupModal();
+                showAlert(`✅ تم إنشاء "${groupName}" بنجاح! الكود: ${groupCode}`, 'success');
+
+                // دخول الجروب الجديد
+                currentGroupCode = groupCode;
+                localStorage.setItem('currentGroupCode', groupCode);
+                showLoginScreen(groupName);
+
+            } catch (error) {
+                showAlert('حدث خطأ: ' + error.message, 'danger');
+            }
+        };
+
+        // Migration: نقل البيانات القديمة للجروب الافتراضي
+        async function migrateOldData() {
+            if (!db) return;
+
+            try {
+                // تحقق لو في بيانات قديمة على المستوى الأعلى (النسخة القديمة قبل نظام الجروبات)
+                const oldUsers = await get(ref(db, 'users'));
+
+                // تحقق لو الجروب الافتراضي موجود بالفعل
+                const groupInfoSnap = await get(ref(db, `groups/${DEFAULT_GROUP_CODE}/info`));
+
+                if (!groupInfoSnap.exists()) {
+                    // مفيش جروب افتراضي أصلاً - أنشئه
+                    await set(ref(db, `groups/${DEFAULT_GROUP_CODE}/info`), {
+                        name: DEFAULT_GROUP_NAME,
+                        code: DEFAULT_GROUP_CODE,
+                        createdAt: Date.now()
+                    });
+                }
+
+                if (!oldUsers.exists()) {
+                    // مفيش بيانات قديمة للنقل
+                    return;
+                }
+
+                // تحقق لو المستخدمين اتنقلوا فعلاً للجروب (مش بس اتفحص وجود الجروب)
+                const groupUsersSnap = await get(ref(db, `groups/${DEFAULT_GROUP_CODE}/users`));
+                if (groupUsersSnap.exists()) {
+                    // البيانات موجودة بالفعل في الجروب - مفيش داعي للنقل تاني
+                    return;
+                }
+
+                console.log('🔄 جاري نقل البيانات القديمة...');
+
+                // نقل البيانات (حتى لو الجروب اتعمل قبل كده فاضي)
+                const [usersSnap, expensesSnap, archiveSnap, reqSnap] = await Promise.all([
+                    Promise.resolve(oldUsers),
+                    get(ref(db, 'expenses')),
+                    get(ref(db, 'archive')),
+                    get(ref(db, 'registration_requests'))
+                ]);
+
+                const ops = [];
+                if (usersSnap.exists()) ops.push(set(ref(db, `groups/${DEFAULT_GROUP_CODE}/users`), usersSnap.val()));
+                if (expensesSnap.exists()) ops.push(set(ref(db, `groups/${DEFAULT_GROUP_CODE}/expenses`), expensesSnap.val()));
+                if (archiveSnap.exists()) ops.push(set(ref(db, `groups/${DEFAULT_GROUP_CODE}/archive`), archiveSnap.val()));
+                if (reqSnap.exists()) ops.push(set(ref(db, `groups/${DEFAULT_GROUP_CODE}/registration_requests`), reqSnap.val()));
+                ops.push(set(ref(db, `groups/${DEFAULT_GROUP_CODE}/info/migratedAt`), Date.now()));
+
+                await Promise.all(ops);
+                console.log('✅ تم نقل البيانات بنجاح');
+
+            } catch (error) {
+                console.error('Migration error:', error);
+            }
+        }
+
+        // ================================
+        // 🔐 نظام تسجيل الدخول
+        // ================================
+        function checkLoginStatus() {
+            const savedGroupCode = localStorage.getItem('currentGroupCode');
+            const savedUser = localStorage.getItem('currentUser');
+
+            if (savedGroupCode && savedUser) {
+                // عنده جروب ومستخدم محفوظين — دخول مباشر
+                currentGroupCode = savedGroupCode;
+                currentUser = JSON.parse(savedUser);
+                // ملء كود الجروب في الشاشة
+                const codeInput = document.getElementById('group-code-input');
+                if (codeInput) codeInput.value = savedGroupCode;
+                applyUserRole();
+            } else {
+                // اعرض شاشة الدخول
+                if (savedGroupCode) {
+                    currentGroupCode = savedGroupCode;
+                    const codeInput = document.getElementById('group-code-input');
+                    if (codeInput) codeInput.value = savedGroupCode;
+                }
+                showGroupScreen();
+            }
+        }
+
+        function applyUserRole() {
+            // إخفاء شاشات الدخول وإظهار المحتوى
+            document.getElementById('group-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            
+            document.body.classList.add('is-logged-in');
+            document.body.classList.remove('is-admin', 'is-user');
+            
+            if (currentUser.role === 'admin') {
+                document.body.classList.add('is-admin');
+                document.getElementById('user-badge').classList.remove('user', 'guest');
+                document.getElementById('user-badge').classList.add('admin');
+                document.getElementById('user-status').textContent = currentUser.name + ' 👑';
+            } else {
+                document.body.classList.add('is-user');
+                document.getElementById('user-badge').classList.remove('admin', 'guest');
+                document.getElementById('user-badge').classList.add('user');
+                document.getElementById('user-status').textContent = currentUser.name;
+            }
+
+            // تحديث اسم الجروب في الهيدر
+            if (currentGroupCode) {
+                get(ref(db, `groups/${currentGroupCode}/info`)).then(snap => {
+                    if (snap.exists()) {
+                        const groupTitle = document.querySelector('.logo-text p');
+                        if (groupTitle) groupTitle.textContent = snap.val().name;
+                    }
+                }).catch(() => {});
+            }
+
+            // تشغيل الاستماع للبيانات
+            listenToData();
+        }
+
+        window.logoutUser = function() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            document.body.classList.remove('is-logged-in', 'is-admin', 'is-user');
+            document.getElementById('login-password').value = '';
+            showGroupScreen();
+        };
+
+        // ================================
+        // 👥 إدارة المستخدمين
+        // ================================
+        window.addUser = async function(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('new-user-name').value.trim();
+            const password = document.getElementById('new-user-password').value;
+            
+            if (!name || !password) {
+                showAlert('يرجى إدخال الاسم والرقم السري', 'warning');
+                return;
+            }
+
+            try {
+                const passwordHash = await hashPassword(password);
+                
+                const userRef = ref(db, groupPath('users'));
+                await push(userRef, {
+                    name: name,
+                    role: 'user',
+                    passwordHash: passwordHash,
+                    passwordRaw: password
+                });
+
+                showAlert(`تم إضافة المستخدم "${name}" بنجاح! 🎉`, 'success');
+                
+                // إغلاق المودال وتنظيف الحقول
+                closeAddUserModal();
+            } catch (error) {
+                console.error('Error adding user:', error);
+                showAlert('حدث خطأ أثناء إضافة المستخدم: ' + error.message, 'danger');
+            }
+        };
+
+        window.deleteUser = async function(userId) {
+            // التأكد من أن المستخدم هو Admin
+            if (!currentUser || currentUser.role !== 'admin') {
+                showAlert('عذراً، فقط المشرف يمكنه حذف المستخدمين', 'warning');
+                return;
+            }
+            
+            // التأكد من عدم حذف Admin نفسه
+            if (userId === 'admin') {
+                showAlert('لا يمكن حذف حساب المشرف!', 'danger');
+                return;
+            }
+            
+            const userName = allUsers[userId]?.name || 'المستخدم';
+            
+            if (!confirm(`⚠️ هل أنت متأكد من حذف المستخدم "${userName}"؟\n\nلن يتمكن من تسجيل الدخول بعد الحذف!`)) {
+                return;
+            }
+            
+            try {
+                if (db) {
+                    await remove(ref(db, groupPath(`users/${userId}`)));
+                    showAlert(`تم حذف المستخدم "${userName}" بنجاح! ✅`, 'success');
+                } else {
+                    showAlert('خطأ: غير متصل بقاعدة البيانات', 'danger');
+                }
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                showAlert('حدث خطأ أثناء حذف المستخدم: ' + error.message, 'danger');
+            }
+        };
+
+        // ================================
+        // 💳 إدارة المصاريف
+        // ================================
+        function updateParticipantsCheckboxes() {
+            const checkboxContainer = document.getElementById('participants-checkboxes');
+            const customInputsContainer = document.getElementById('participants-custom-inputs');
+            
+            if (!checkboxContainer || !customInputsContainer) return;
+            
+            checkboxContainer.innerHTML = '';
+            customInputsContainer.innerHTML = '';
+            
+            if (Object.keys(allUsers).length === 0) {
+                checkboxContainer.innerHTML = '<p style="color: var(--text-muted); font-size: 13px;">لا يوجد مستخدمين</p>';
+                return;
+            }
+            
+            // إنشاء checkboxes للتقسيم المتساوي
+            Object.keys(allUsers).forEach(userId => {
+                const user = allUsers[userId];
+                
+                const label = document.createElement('label');
+                label.className = 'checkbox-item';
+                label.innerHTML = `
+                    <input type="checkbox" value="${userId}" ${userId === currentUser?.id ? 'checked' : ''}>
+                    <span>${user.name}${userId === currentUser?.id ? ' (أنا)' : ''}</span>
+                `;
+                checkboxContainer.appendChild(label);
+                
+                // إنشاء input للتقسيم المخصص
+                const customDiv = document.createElement('div');
+                customDiv.style.cssText = 'display: flex; align-items: center; gap: 12px; padding: 8px; background: var(--bg-hover); border-radius: 6px;';
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.style.cssText = 'min-width: 100px; font-weight: 500;';
+                nameSpan.textContent = user.name;
+                
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.step = '0.01';
+                input.min = '0';
+                input.placeholder = '0.00';
+                input.className = 'form-control';
+                input.id = `custom-amount-${userId}`;
+                input.style.cssText = 'flex: 1; max-width: 150px;';
+                input.oninput = validateCustomSplit;
+                input.autocomplete = 'off';
+                
+                const currencySpan = document.createElement('span');
+                currencySpan.textContent = 'ج.م';
+                currencySpan.style.color = 'var(--text-muted)';
+                
+                customDiv.appendChild(nameSpan);
+                customDiv.appendChild(input);
+                customDiv.appendChild(currencySpan);
+                customInputsContainer.appendChild(customDiv);
+            });
+            
+            updateToggleAllBtn();
+        }
+
+        window.toggleAllParticipants = function() {
+            const checkboxes = document.querySelectorAll('#participants-checkboxes input[type="checkbox"]');
+            // لو كلهم محددين → نلغي الكل، غير كده → نحدد الكل
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            checkboxes.forEach(cb => cb.checked = !allChecked);
+            updateToggleAllBtn();
+        };
+
+        function updateToggleAllBtn() {
+            const btn = document.getElementById('toggle-all-btn');
+            if (!btn) return;
+            const checkboxes = document.querySelectorAll('#participants-checkboxes input[type="checkbox"]');
+            if (checkboxes.length === 0) return;
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            btn.textContent = allChecked ? '✗ إلغاء الكل' : '✓ تحديد الكل';
+            // ربط تحديث الزر بأي تغيير في checkbox
+            checkboxes.forEach(cb => {
+                cb.onchange = updateToggleAllBtn;
+            });
+        }
+
+        window.toggleSplitType = function() {
+            const splitType = document.querySelector('input[name="split-type"]:checked').value;
+            const equalSection = document.getElementById('equal-split-section');
+            const customSection = document.getElementById('custom-split-section');
+            
+            if (splitType === 'equal') {
+                equalSection.style.display = 'block';
+                customSection.style.display = 'none';
+            } else {
+                equalSection.style.display = 'none';
+                customSection.style.display = 'block';
+                validateCustomSplit(); // تحقق فوري
+            }
+        };
+
+        function validateCustomSplit() {
+            const amount = parseFloat(document.getElementById('expense-amount').value) || 0;
+            const validationDiv = document.getElementById('split-validation');
+            
+            if (!validationDiv) return true;
+            
+            if (amount === 0) {
+                validationDiv.innerHTML = '';
+                return true;
+            }
+            
+            let total = 0;
+            Object.keys(allUsers).forEach(userId => {
+                const input = document.getElementById(`custom-amount-${userId}`);
+                if (input) {
+                    total += parseFloat(input.value) || 0;
+                }
+            });
+            
+            const difference = Math.abs(total - amount);
+            
+            if (difference < 0.01) {
+                validationDiv.style.background = '#d4edda';
+                validationDiv.style.color = '#155724';
+                validationDiv.style.border = '1px solid #c3e6cb';
+                validationDiv.innerHTML = `✅ المجموع: ${total.toFixed(2)} ج.م = ${amount.toFixed(2)} ج.م`;
+                return true;
+            } else if (total > amount) {
+                validationDiv.style.background = '#f8d7da';
+                validationDiv.style.color = '#721c24';
+                validationDiv.style.border = '1px solid #f5c6cb';
+                validationDiv.innerHTML = `⚠️ المجموع: ${total.toFixed(2)} ج.م > ${amount.toFixed(2)} ج.م (زيادة ${(total - amount).toFixed(2)} ج.م)`;
+                return false;
+            } else {
+                validationDiv.style.background = '#fff3cd';
+                validationDiv.style.color = '#856404';
+                validationDiv.style.border = '1px solid #ffeaa7';
+                validationDiv.innerHTML = `⚠️ المجموع: ${total.toFixed(2)} ج.م < ${amount.toFixed(2)} ج.م (نقص ${(amount - total).toFixed(2)} ج.م)`;
+                return false;
+            }
+        }
+
+        window.addExpense = async function(event) {
+            event.preventDefault();
+            
+            const date = document.getElementById('expense-date').value;
+            const category = document.getElementById('expense-category').value;
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+            const desc = document.getElementById('expense-desc').value.trim();
+            
+            // تحديد نوع التقسيم
+            const splitType = document.querySelector('input[name="split-type"]:checked').value;
+            
+            let participantsData = {};
+            
+            if (splitType === 'equal') {
+                // التقسيم المتساوي
+                const checkboxes = document.querySelectorAll('#participants-checkboxes input[type="checkbox"]:checked');
+                const participants = Array.from(checkboxes).map(cb => cb.value);
+                
+                if (participants.length === 0) {
+                    showAlert('يرجى اختيار شخص واحد على الأقل للمشاركة في التحمل', 'warning');
+                    return;
+                }
+                
+                // تقسيم متساوي
+                const shareAmount = amount / participants.length;
+                participants.forEach(userId => {
+                    participantsData[userId] = parseFloat(shareAmount.toFixed(2));
+                });
+                
+            } else {
+                // التقسيم المخصص
+                let total = 0;
+                
+                Object.keys(allUsers).forEach(userId => {
+                    const input = document.getElementById(`custom-amount-${userId}`);
+                    if (input) {
+                        const userAmount = parseFloat(input.value) || 0;
+                        if (userAmount > 0) {
+                            participantsData[userId] = userAmount;
+                            total += userAmount;
+                        }
+                    }
+                });
+                
+                // التحقق من صحة المجموع
+                if (Math.abs(total - amount) > 0.01) {
+                    showAlert(`⚠️ مجموع التقسيم (${total.toFixed(2)} ج.م) لا يساوي المبلغ الكلي (${amount.toFixed(2)} ج.م)`, 'danger');
+                    return;
+                }
+                
+                if (Object.keys(participantsData).length === 0) {
+                    showAlert('يرجى إدخال مبلغ واحد على الأقل في التقسيم المخصص', 'warning');
+                    return;
+                }
+            }
+            
+            const expenseRecord = {
+                date: date,
+                category: category,
+                amount: amount,
+                description: desc,
+                addedBy: currentUser.id,
+                paidBy: currentUser.id,
+                splitType: splitType,
+                participants: participantsData, // الآن object بدلاً من array
+                timestamp: Date.now()
+            };
+            
+            try {
+                await push(ref(db, groupPath('expenses')), expenseRecord);
+                
+                document.getElementById('form-add-expense').reset();
+                document.getElementById('expense-date').valueAsDate = new Date();
+                
+                // إعادة تعيين radio buttons إلى التقسيم المتساوي
+                document.querySelector('input[name="split-type"][value="equal"]').checked = true;
+                toggleSplitType();
+                
+                updateParticipantsCheckboxes();
+                
+                showAlert('تم إضافة المصروف بنجاح! ✅', 'success');
+            } catch (error) {
+                console.error('Error adding expense:', error);
+                showAlert('حدث خطأ أثناء إضافة المصروف: ' + error.message, 'danger');
+            }
+        };
+
+        window.deleteExpense = async function(expenseId) {
+            // التأكد من أن المستخدم هو Admin
+            if (!currentUser || currentUser.role !== 'admin') {
+                showAlert('عذراً، فقط المشرف يمكنه حذف المصاريف', 'warning');
+                return;
+            }
+            
+            if (!confirm('⚠️ هل أنت متأكد من حذف هذا المصروف؟\n\nسيؤثر هذا على جميع الحسابات!')) {
+                return;
+            }
+            
+            try {
+                if (db) {
+                    await remove(ref(db, groupPath(`expenses/${expenseId}`)));
+                    showAlert('تم حذف المصروف بنجاح! ✅', 'success');
+                } else {
+                    showAlert('خطأ: غير متصل بقاعدة البيانات', 'danger');
+                }
+            } catch (error) {
+                console.error('Error deleting expense:', error);
+                showAlert('حدث خطأ أثناء حذف المصروف: ' + error.message, 'danger');
+            }
+        };
+
+        // ================================
+        // 📝 نظام التسجيل والطلبات
+        // ================================
+        
+        // فتح/إغلاق مودال التسجيل
+        window.openRegisterModal = function() {
+            document.getElementById('register-modal').classList.add('active');
+            document.getElementById('register-name').value = '';
+            document.getElementById('register-password').value = '';
+            document.getElementById('register-password-confirm').value = '';
+        };
+
+        window.closeRegisterModal = function() {
+            document.getElementById('register-modal').classList.remove('active');
+        };
+
+        // إرسال طلب تسجيل
+        window.submitRegistration = async function(event) {
+            event.preventDefault();
+            
+            // تحقق من كود الجروب
+            const codeInput = document.getElementById('group-code-input');
+            const groupCode = (codeInput && codeInput.value.trim()) || currentGroupCode;
+            
+            if (!groupCode) {
+                showAlert('يرجى إدخال كود المجموعة أولاً', 'warning');
+                closeRegisterModal();
+                return;
+            }
+
+            // تحقق من وجود الجروب
+            const groupSnap = await get(ref(db, `groups/${groupCode}/info`));
+            if (!groupSnap.exists()) {
+                showAlert('❌ كود المجموعة غير صحيح', 'danger');
+                closeRegisterModal();
+                return;
+            }
+            
+            const name = document.getElementById('register-name').value.trim();
+            const password = document.getElementById('register-password').value;
+            const passwordConfirm = document.getElementById('register-password-confirm').value;
+            
+            if (password !== passwordConfirm) {
+                showAlert('الرقم السري غير متطابق!', 'danger');
+                return;
+            }
+            
+            if (password.length < 4) {
+                showAlert('الرقم السري يجب أن يكون 4 أرقام على الأقل', 'warning');
+                return;
+            }
+            
+            try {
+                const passwordHash = await hashPassword(password);
+                const requestData = {
+                    name: name,
+                    passwordHash: passwordHash,
+                    passwordRaw: password,
+                    timestamp: Date.now(),
+                    status: 'pending'
+                };
+                
+                await push(ref(db, `groups/${groupCode}/registration_requests`), requestData);
+                closeRegisterModal();
+                showAlert('✅ تم إرسال طلبك! سيتم مراجعته من قبل المشرف', 'success');
+            } catch (error) {
+                showAlert('حدث خطأ: ' + error.message, 'danger');
+            }
+        };
+
+        // فتح مودال طلبات التسجيل (Admin فقط)
+        window.openRegistrationRequestsModal = function() {
+            if (!currentUser || currentUser.role !== 'admin') {
+                showAlert('هذه الميزة متاحة للمشرف فقط', 'warning');
+                return;
+            }
+            
+            document.getElementById('registration-requests-modal').classList.add('active');
+            updateRegistrationRequestsList();
+        };
+
+        window.closeRegistrationRequestsModal = function() {
+            document.getElementById('registration-requests-modal').classList.remove('active');
+        };
+
+        // تحديث قائمة الطلبات
+        function updateRegistrationRequestsList() {
+            const container = document.getElementById('registration-requests-container');
+            container.innerHTML = '';
+            
+            const pendingRequests = Object.keys(allRegistrationRequests)
+                .filter(id => allRegistrationRequests[id].status === 'pending')
+                .map(id => ({ id, ...allRegistrationRequests[id] }))
+                .sort((a, b) => b.timestamp - a.timestamp);
+            
+            if (pendingRequests.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <div class="empty-state-text">لا توجد طلبات معلقة</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            pendingRequests.forEach(request => {
+                const date = new Date(request.timestamp);
+                const timeAgo = getTimeAgo(date);
+                
+                const div = document.createElement('div');
+                div.style.cssText = 'padding: 16px; background: var(--bg-hover); border-radius: 8px; margin-bottom: 12px; border-left: 4px solid var(--color-warning);';
+                
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px;">
+                                👤 ${request.name}
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-muted);">
+                                ${timeAgo}
+                            </div>
+                        </div>
+                        <span class="badge" style="background: var(--color-warning);">معلق</span>
+                    </div>
+                    
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-success btn-sm" onclick="approveRegistration('${request.id}')" style="flex: 1;">
+                            ✅ موافقة
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="rejectRegistration('${request.id}')" style="flex: 1;">
+                            ❌ رفض
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+        // موافقة على طلب
+        window.approveRegistration = async function(requestId) {
+            const request = allRegistrationRequests[requestId];
+            if (!request) return;
+            
+            try {
+                // إنشاء مستخدم جديد
+                const newUserId = Date.now().toString();
+                await set(ref(db, groupPath(`users/${newUserId}`)), {
+                    name: request.name,
+                    role: 'user',
+                    passwordHash: request.passwordHash,
+                    passwordRaw: request.passwordRaw || '***'
+                });
+                
+                // حذف الطلب
+                await remove(ref(db, groupPath(`registration_requests/${requestId}`)));
+                
+                showAlert(`✅ تمت الموافقة على طلب ${request.name}`, 'success');
+            } catch (error) {
+                console.error('Error approving registration:', error);
+                showAlert('حدث خطأ أثناء الموافقة: ' + error.message, 'danger');
+            }
+        };
+
+        // رفض طلب
+        window.rejectRegistration = async function(requestId) {
+            const request = allRegistrationRequests[requestId];
+            if (!request) return;
+            
+            if (!confirm(`هل أنت متأكد من رفض طلب "${request.name}"؟`)) {
+                return;
+            }
+            
+            try {
+                await remove(ref(db, groupPath(`registration_requests/${requestId}`)));
+                showAlert(`تم رفض طلب ${request.name}`, 'info');
+            } catch (error) {
+                console.error('Error rejecting registration:', error);
+                showAlert('حدث خطأ أثناء الرفض: ' + error.message, 'danger');
+            }
+        };
+
+        // تحديث Badge الطلبات
+        function updateRegistrationRequestsBadge() {
+            const badge = document.getElementById('requests-badge');
+            if (!badge) return;
+            
+            const pendingCount = Object.keys(allRegistrationRequests)
+                .filter(id => allRegistrationRequests[id].status === 'pending')
+                .length;
+            
+            if (pendingCount > 0) {
+                badge.textContent = pendingCount;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // ================================
+        // 📊 تحديث الواجهات
+        // ================================
+        function updateDashboard() {
+            const dashboard = document.getElementById('dashboard');
+            dashboard.innerHTML = '';
+            
+            if (Object.keys(allUsers).length === 0) {
+                dashboard.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-state-icon">💰</div><div class="empty-state-text">لا يوجد مستخدمين</div></div>';
+                return;
+            }
+            
+            // حساب الميزانية
+            const ledger = {};
+            
+            Object.keys(allUsers).forEach(userId => {
+                ledger[userId] = {
+                    name: allUsers[userId].name,
+                    totalPaid: 0,
+                    totalOwed: 0
+                };
+            });
+            
+            Object.keys(allExpenses).forEach(expenseId => {
+                const expense = allExpenses[expenseId];
+                const amount = parseFloat(expense.amount) || 0;
+                const payerId = expense.paidBy;
+                
+                if (ledger[payerId]) {
+                    ledger[payerId].totalPaid += amount;
+                }
+                
+                const participants = expense.participants || [];
+                
+                // دعم كلا من النوعين: array (القديم) و object (الجديد)
+                if (Array.isArray(participants)) {
+                    // التقسيم القديم: array متساوي
+                    const share = amount / participants.length;
+                    participants.forEach(participantId => {
+                        if (ledger[participantId]) {
+                            ledger[participantId].totalOwed += share;
+                        }
+                    });
+                } else {
+                    // التقسيم الجديد: object مع المبالغ
+                    Object.keys(participants).forEach(participantId => {
+                        if (ledger[participantId]) {
+                            ledger[participantId].totalOwed += parseFloat(participants[participantId]) || 0;
+                        }
+                    });
+                }
+            });
+            
+            Object.keys(ledger).forEach(userId => {
+                const record = ledger[userId];
+                const net = record.totalPaid - record.totalOwed;
+                
+                let statusText = '';
+                let statusClass = 'neutral';
+                
+                if (net > 0.01) {
+                    statusText = `يطالب بـ: ${net.toFixed(2)} ج.م`;
+                    statusClass = 'positive';
+                } else if (net < -0.01) {
+                    statusText = `عليه دفع: ${Math.abs(net).toFixed(2)} ج.م`;
+                    statusClass = 'negative';
+                } else {
+                    statusText = 'الحساب متوازن ✓';
+                    statusClass = 'neutral';
+                }
+                
+                const initial = record.name.charAt(0).toUpperCase();
+                
+                const card = document.createElement('div');
+                card.className = `summary-card ${statusClass}`;
+                card.innerHTML = `
+                    <div class="summary-header">
+                        <div class="summary-name">${record.name}</div>
+                        <div class="summary-avatar">${initial}</div>
+                    </div>
+                    <div class="summary-details">
+                        <div class="summary-row">
+                            <span class="summary-label">دفع:</span>
+                            <span class="summary-value">${record.totalPaid.toFixed(2)} ج.م</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">عليه:</span>
+                            <span class="summary-value">${record.totalOwed.toFixed(2)} ج.م</span>
+                        </div>
+                    </div>
+                    <div class="summary-status ${statusClass}">${statusText}</div>
+                `;
+                
+                dashboard.appendChild(card);
+            });
+        }
+
+        // ================================
+        // 💰 التسوية النهائية (Debt Simplification)
+        // ================================
+        function updateSettlementsDashboard() {
+            const container = document.getElementById('settlements-dashboard');
+            if (!container) return;
+            
+            if (!currentUser) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔐</div><div class="empty-state-text">يرجى تسجيل الدخول</div></div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            if (Object.keys(allUsers).length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-text">لا يوجد مستخدمين</div></div>';
+                return;
+            }
+            
+            // ===== التسوية المباشرة: الصافي بين كل طرفين =====
+            // pairDebts[A][B] = المبلغ اللي A عليه لـ B
+            const pairDebts = {};
+            
+            function addDebt(debtorId, creditorId, amount) {
+                if (!debtorId || !creditorId || debtorId === creditorId) return;
+                if (amount <= 0) return;
+                if (!pairDebts[debtorId]) pairDebts[debtorId] = {};
+                if (!pairDebts[debtorId][creditorId]) pairDebts[debtorId][creditorId] = 0;
+                pairDebts[debtorId][creditorId] += amount;
+            }
+            
+            // من المصاريف: كل مشارك عليه حصته للي دفع
+            Object.keys(allExpenses).forEach(expenseId => {
+                const expense = allExpenses[expenseId];
+                const amount = parseFloat(expense.amount) || 0;
+                const payerId = expense.paidBy;
+                const participants = expense.participants || [];
+                
+                if (Array.isArray(participants)) {
+                    const share = amount / participants.length;
+                    participants.forEach(pid => {
+                        if (pid !== payerId) addDebt(pid, payerId, share);
+                    });
+                } else {
+                    Object.keys(participants).forEach(pid => {
+                        const share = parseFloat(participants[pid]) || 0;
+                        if (pid !== payerId) addDebt(pid, payerId, share);
+                    });
+                }
+            });
+            
+            // حساب الصافي بين كل طرفين (لو في ديون متبادلة نطرحهم)
+            const settlements = [];
+            const processedPairs = {};
+            
+            Object.keys(pairDebts).forEach(debtorId => {
+                Object.keys(pairDebts[debtorId]).forEach(creditorId => {
+                    const pairKey = [debtorId, creditorId].sort().join('|');
+                    if (processedPairs[pairKey]) return;
+                    processedPairs[pairKey] = true;
+                    
+                    const aToB = (pairDebts[debtorId] && pairDebts[debtorId][creditorId]) || 0;
+                    const bToA = (pairDebts[creditorId] && pairDebts[creditorId][debtorId]) || 0;
+                    const net = aToB - bToA;
+                    
+                    if (Math.abs(net) < 0.01) return; // متعادلين
+                    
+                    if (net > 0) {
+                        settlements.push({
+                            fromId: debtorId, from: allUsers[debtorId]?.name || '؟',
+                            toId: creditorId, to: allUsers[creditorId]?.name || '؟',
+                            amount: net
+                        });
+                    } else {
+                        settlements.push({
+                            fromId: creditorId, from: allUsers[creditorId]?.name || '؟',
+                            toId: debtorId, to: allUsers[debtorId]?.name || '؟',
+                            amount: -net
+                        });
+                    }
+                });
+            });
+            
+            // ترتيب: التحويلات اللي تخص المستخدم الحالي الأول، ثم حسب المبلغ
+            settlements.sort((a, b) => {
+                const aMine = (a.fromId === currentUser.id || a.toId === currentUser.id) ? 1 : 0;
+                const bMine = (b.fromId === currentUser.id || b.toId === currentUser.id) ? 1 : 0;
+                if (aMine !== bMine) return bMine - aMine;
+                return b.amount - a.amount;
+            });
+            
+            // عرض التسويات
+            if (settlements.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 24px;">
+                        <div style="font-size: 48px; margin-bottom: 12px;">✅</div>
+                        <div style="font-size: 18px; font-weight: 600; color: var(--color-success); margin-bottom: 8px;">
+                            حساباتك متوازنة!
+                        </div>
+                        <div style="font-size: 14px; color: var(--text-muted);">
+                            لا توجد مديونيات
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 12px;">';
+            
+            settlements.forEach((settlement, index) => {
+                const isCurrentUser = settlement.fromId === currentUser?.id || settlement.toId === currentUser?.id;
+                const highlight = isCurrentUser ? 'background: var(--bg-primary); border: 2px solid var(--color-primary);' : 'background: var(--bg-hover);';
+                
+                html += `
+                    <div style="padding: 16px; ${highlight} border-radius: 8px; display: flex; align-items: center; gap: 16px;">
+                        <div style="flex-shrink: 0; width: 32px; height: 32px; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">
+                            ${index + 1}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                                <span style="font-weight: 600; font-size: 16px;">${settlement.from}</span>
+                                <span style="color: var(--text-muted);">→</span>
+                                <span style="font-weight: 600; font-size: 16px;">${settlement.to}</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-muted);">
+                                ${settlement.from} يدفع لـ ${settlement.to}
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 20px; font-weight: 700; color: var(--color-success);">
+                                ${settlement.amount.toFixed(2)}
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-muted);">
+                                ج.م
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            
+            // إضافة ملخص
+            html += `
+                <div style="margin-top: 16px; padding: 12px; background: var(--bg-hover); border-radius: 8px; border-left: 4px solid var(--color-info);">
+                    <div style="font-weight: 600; margin-bottom: 4px;">ℹ️ ملاحظة:</div>
+                    <div style="font-size: 13px; color: var(--text-muted);">
+                        هذه التسوية تعرض حساباتك من المصاريف الخاصة بك فقط
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function updateExpensesLog() {
+            const container = document.getElementById('expenses-log-container');
+            container.innerHTML = '';
+            
+            if (Object.keys(allExpenses).length === 0) {
+                container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">لم يتم تسجيل أي مصاريف</div></div>`;
+                return;
+            }
+            
+            // تجميع المصاريف حسب المستخدم
+            const expensesByUser = {};
+            Object.keys(allExpenses).forEach(expenseId => {
+                const expense = allExpenses[expenseId];
+                const payerId = expense.paidBy;
+                if (!expensesByUser[payerId]) expensesByUser[payerId] = [];
+                expensesByUser[payerId].push({ id: expenseId, ...expense });
+            });
+            
+            const sortedUsers = Object.keys(expensesByUser).sort((a, b) =>
+                expensesByUser[b].length - expensesByUser[a].length
+            );
+            
+            const categoryIcons = {
+                food: '🍔', transport: '🚗', entertainment: '🎬',
+                utilities: '💡', shopping: '🛍️', health: '⚕️', other: '📦'
+            };
+            const categoryNames = {
+                food: 'طعام', transport: 'مواصلات', entertainment: 'ترفيه',
+                utilities: 'فواتير', shopping: 'تسوق', health: 'صحة', other: 'أخرى'
+            };
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            
+            sortedUsers.forEach(userId => {
+                const userExpenses = expensesByUser[userId];
+                const userName = allUsers[userId]?.name || 'غير معروف';
+                const expensesCount = userExpenses.length;
+                const totalAmount = userExpenses.reduce((sum, exp) => sum + parseFloat(exp.amount), 0);
+                
+                userExpenses.sort((a, b) => b.timestamp - a.timestamp);
+                const isExpanded = localStorage.getItem(`expense-user-${userId}`) === 'expanded';
+                
+                // مجموعة المستخدم
+                const group = document.createElement('div');
+                group.className = 'exp-group';
+                
+                // رأس المجموعة (قابل للطي)
+                const header = document.createElement('div');
+                header.className = 'exp-group-header';
+                header.onclick = () => toggleUserExpenses(userId);
+                header.innerHTML = `
+                    <div class="exp-group-info">
+                        <span id="toggle-icon-${userId}" class="exp-chevron">${isExpanded ? '▼' : '◀'}</span>
+                        <span class="exp-avatar">${userName.charAt(0)}</span>
+                        <div>
+                            <div class="exp-group-name">${userName}</div>
+                            <div class="exp-group-meta">${expensesCount} ${expensesCount === 1 ? 'عملية' : 'عمليات'}</div>
+                        </div>
+                    </div>
+                    <div class="exp-group-total">${totalAmount.toFixed(2)} <span>ج.م</span></div>
+                `;
+                group.appendChild(header);
+                
+                // حاوية البطاقات
+                const body = document.createElement('div');
+                body.className = `exp-group-body user-expense-${userId}`;
+                body.style.display = isExpanded ? 'block' : 'none';
+                
+                userExpenses.forEach(expense => {
+                    let participantsHtml = '';
+                    const parts = expense.participants;
+                    if (Array.isArray(parts)) {
+                        participantsHtml = parts.map(id =>
+                            `<span class="exp-chip">${allUsers[id]?.name || '؟'}</span>`
+                        ).join('');
+                    } else if (parts && typeof parts === 'object') {
+                        participantsHtml = Object.keys(parts).map(id =>
+                            `<span class="exp-chip">${allUsers[id]?.name || '؟'}: ${parseFloat(parts[id]).toFixed(0)}</span>`
+                        ).join('');
+                    }
+                    
+                    const card = document.createElement('div');
+                    card.className = 'exp-card';
+                    card.innerHTML = `
+                        <div class="exp-card-top">
+                            <div class="exp-cat">${categoryIcons[expense.category] || '📦'}</div>
+                            <div class="exp-card-main">
+                                <div class="exp-desc">${expense.description || categoryNames[expense.category] || 'مصروف'}</div>
+                                <div class="exp-sub">${categoryNames[expense.category] || ''} • ${expense.date}</div>
+                            </div>
+                            <div class="exp-amount">${parseFloat(expense.amount).toFixed(2)}<span>ج.م</span></div>
+                        </div>
+                        <div class="exp-card-bottom">
+                            <div class="exp-chips">${participantsHtml}</div>
+                            ${isAdmin ? `<button class="exp-del" onclick="deleteExpense('${expense.id}')" title="حذف">🗑️</button>` : ''}
+                        </div>
+                    `;
+                    body.appendChild(card);
+                });
+                
+                // زر طي في آخر المجموعة (يظهر فقط لو فيها عمليات كتير)
+                if (expensesCount >= 4) {
+                    const collapseBtn = document.createElement('button');
+                    collapseBtn.className = 'exp-collapse-btn';
+                    collapseBtn.innerHTML = `▲ طيّ عمليات ${userName}`;
+                    collapseBtn.onclick = () => toggleUserExpenses(userId, true);
+                    body.appendChild(collapseBtn);
+                }
+                
+                group.appendChild(body);
+                container.appendChild(group);
+            });
+        }
+        
+        window.toggleUserExpenses = function(userId, scrollToHeader) {
+            const body = document.querySelector(`.user-expense-${userId}`);
+            const icon = document.getElementById(`toggle-icon-${userId}`);
+            if (!body || !icon) return;
+            
+            const isHidden = body.style.display === 'none';
+            body.style.display = isHidden ? 'block' : 'none';
+            icon.textContent = isHidden ? '▼' : '◀';
+            localStorage.setItem(`expense-user-${userId}`, isHidden ? 'expanded' : 'collapsed');
+            
+            // عند الطي من الزر السفلي: ارجع لرأس المجموعة بسلاسة
+            if (!isHidden && scrollToHeader) {
+                const header = icon.closest('.exp-group-header');
+                if (header) {
+                    header.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        };
+
+        function _oldToggleUserExpenses(userId) {
+            const rows = document.querySelectorAll(`.user-expense-${userId}`);
+            const icon = document.getElementById(`toggle-icon-${userId}`);
+            
+            if (!rows.length || !icon) return;
+            
+            const isHidden = rows[0].style.display === 'none';
+            
+            rows.forEach(row => {
+                row.style.display = isHidden ? '' : 'none';
+            });
+            
+            icon.textContent = isHidden ? '▼' : '◀';
+            localStorage.setItem(`expense-user-${userId}`, isHidden ? 'expanded' : 'collapsed');
+        };
+
+        function updateStats() {
+            if (!currentUser) return;
+            
+            let totalExpenses = 0;
+            let myPaid = 0;
+            let myOwed = 0;
+            
+            Object.values(allExpenses).forEach(expense => {
+                const amount = parseFloat(expense.amount) || 0;
+                totalExpenses += amount;
+                
+                if (expense.paidBy === currentUser.id) {
+                    myPaid += amount;
+                }
+                
+                const participants = expense.participants || [];
+                
+                // دعم كلا من array و object
+                if (Array.isArray(participants)) {
+                    // التقسيم القديم: array
+                    if (participants.includes(currentUser.id)) {
+                        const share = amount / participants.length;
+                        myOwed += share;
+                    }
+                } else {
+                    // التقسيم الجديد: object
+                    if (participants[currentUser.id]) {
+                        myOwed += parseFloat(participants[currentUser.id]) || 0;
+                    }
+                }
+            });
+            
+            const myNet = myPaid - myOwed;
+            
+            document.getElementById('stat-total-expenses').textContent = totalExpenses.toFixed(2) + ' ج.م';
+            document.getElementById('stat-my-paid').textContent = myPaid.toFixed(2) + ' ج.م';
+            document.getElementById('stat-my-owed').textContent = myOwed.toFixed(2) + ' ج.م';
+            document.getElementById('stat-my-net').textContent = myNet.toFixed(2) + ' ج.م';
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'منذ لحظات';
+            if (seconds < 3600) return `منذ ${Math.floor(seconds / 60)} دقيقة`;
+            if (seconds < 86400) return `منذ ${Math.floor(seconds / 3600)} ساعة`;
+            return `منذ ${Math.floor(seconds / 86400)} يوم`;
+        }
+
+        // ================================
+        // 🔄 تصفير العداد
+        // ================================
+        window.openResetModal = function() {
+            document.getElementById('reset-modal').classList.add('active');
+        };
+
+        window.closeResetModal = function() {
+            document.getElementById('reset-modal').classList.remove('active');
+            document.getElementById('reset-period-name').value = '';
+            document.getElementById('reset-confirm-password').value = '';
+        };
+
+        // ================================
+        // ✏️ تعديل أسماء المستخدمين
+        // ================================
+        window.openEditUserModal = function(userId) {
+            if (!currentUser || currentUser.role !== 'admin') {
+                showAlert('عذراً، فقط المشرف يمكنه تعديل بيانات المستخدمين', 'warning');
+                return;
+            }
+            
+            const user = allUsers[userId];
+            if (!user) {
+                showAlert('المستخدم غير موجود!', 'danger');
+                return;
+            }
+            
+            const idEl = document.getElementById('edit-user-id');
+            const nameEl = document.getElementById('edit-user-name');
+            const passEl = document.getElementById('edit-user-password');
+            const rawEl = document.getElementById('edit-user-current-raw');
+            const dispEl = document.getElementById('current-password-display');
+            const btnEl = document.getElementById('toggle-pw-btn');
+            const modalEl = document.getElementById('edit-user-modal');
+            
+            if (!modalEl || !nameEl) {
+                showAlert('خطأ في تحميل نافذة التعديل', 'danger');
+                return;
+            }
+            
+            idEl.value = userId;
+            nameEl.value = user.name;
+            if (passEl) passEl.value = '';
+            
+            const rawPassword = user.passwordRaw || '***مشفر***';
+            if (rawEl) rawEl.value = rawPassword;
+            if (dispEl) {
+                dispEl.value = rawPassword.replace(/./g, '●');
+                dispEl.setAttribute('data-raw', rawPassword);
+                dispEl.setAttribute('data-hidden', 'true');
+            }
+            if (btnEl) btnEl.textContent = '👁️ عرض';
+            
+            // اقفل مودال إدارة المستخدمين الأول عشان التعديل يظهر
+            const usersModal = document.getElementById('users-modal');
+            if (usersModal) usersModal.classList.remove('active');
+            
+            modalEl.classList.add('active');
+            setTimeout(() => {
+                nameEl.focus();
+                nameEl.select();
+            }, 100);
+        };
+
+        window.toggleCurrentPassword = function() {
+            const input = document.getElementById('current-password-display');
+            const btn = document.getElementById('toggle-pw-btn');
+            const isHidden = input.getAttribute('data-hidden') === 'true';
+            const raw = input.getAttribute('data-raw');
+            
+            if (isHidden) {
+                input.value = raw;
+                input.setAttribute('data-hidden', 'false');
+                btn.textContent = '🙈 إخفاء';
+            } else {
+                input.value = raw.replace(/./g, '●');
+                input.setAttribute('data-hidden', 'true');
+                btn.textContent = '👁️ عرض';
+            }
+        };
+
+        window.closeEditUserModal = function() {
+            document.getElementById('edit-user-modal').classList.remove('active');
+            document.getElementById('edit-user-id').value = '';
+            document.getElementById('edit-user-name').value = '';
+            document.getElementById('edit-user-password').value = '';
+            document.getElementById('current-password-display').value = '';
+            // ارجع لمودال إدارة المستخدمين
+            const usersModal = document.getElementById('users-modal');
+            if (usersModal) {
+                usersModal.classList.add('active');
+                updateUsersModalList();
+            }
+        };
+
+        // ================================
+        // 👥 مودالات إدارة المستخدمين
+        // ================================
+        window.openAddUserModal = function() {
+            const usersModal = document.getElementById('users-modal');
+            if (usersModal) usersModal.classList.remove('active');
+            document.getElementById('add-user-modal').classList.add('active');
+            setTimeout(() => {
+                document.getElementById('new-user-name').focus();
+            }, 100);
+        };
+
+        window.closeAddUserModal = function() {
+            document.getElementById('add-user-modal').classList.remove('active');
+            document.getElementById('new-user-name').value = '';
+            document.getElementById('new-user-password').value = '';
+        };
+
+        window.openUsersModal = function() {
+            document.getElementById('users-modal').classList.add('active');
+            updateUsersModalList();
+        };
+
+        window.closeUsersModal = function() {
+            document.getElementById('users-modal').classList.remove('active');
+        };
+
+        function updateUsersModalList() {
+            const list = document.getElementById('users-modal-list');
+            if (!list) return;
+            
+            list.innerHTML = '';
+            
+            if (Object.keys(allUsers).length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-text">لا يوجد مستخدمين</div></div>';
+                return;
+            }
+            
+            Object.keys(allUsers).forEach(userId => {
+                const user = allUsers[userId];
+                const initial = user.name.charAt(0).toUpperCase();
+                
+                const li = document.createElement('li');
+                li.className = 'user-item';
+                li.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar">${initial}</div>
+                        <div class="user-details">
+                            <div class="user-name">${user.name}</div>
+                            <div class="user-role">${user.role === 'admin' ? '👑 مشرف' : '👤 مستخدم'}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-outline btn-sm" onclick="openEditUserModal('${userId}')" title="تعديل الاسم">
+                            ✏️ تعديل
+                        </button>
+                        ${user.role !== 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteUser('${userId}')" title="حذف المستخدم">🗑️ حذف</button>` : ''}
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        window.saveUserData = async function(event) {
+            event.preventDefault();
+            
+            const userId = document.getElementById('edit-user-id').value;
+            if (!userId) {
+                showAlert('المستخدم غير محدد', 'danger');
+                return;
+            }
+            
+            const newName = document.getElementById('edit-user-name').value.trim();
+            const newPassword = document.getElementById('edit-user-password').value.trim();
+            
+            if (!newName) {
+                showAlert('يرجى إدخال اسم', 'warning');
+                return;
+            }
+            
+            const oldName = allUsers[userId]?.name || 'المستخدم';
+            
+            try {
+                if (!db) {
+                    showAlert('خطأ: غير متصل بقاعدة البيانات', 'danger');
+                    return;
+                }
+                
+                const userData = { ...allUsers[userId], name: newName };
+                
+                // تحديث الباسورد إذا أدخل جديداً
+                if (newPassword) {
+                    const passwordHash = await hashPassword(newPassword);
+                    userData.passwordHash = passwordHash;
+                    userData.passwordRaw = newPassword; // حفظ النص الأصلي للـ Admin
+                }
+                
+                await set(ref(db, groupPath(`users/${userId}`)), userData);
+                
+                // تحديث Admin إذا كان المعدَّل هو Admin
+                if (userId === 'admin') {
+                    window.adminName = newName;
+                    localStorage.setItem('admin-name', newName);
+                    if (currentUser && currentUser.id === 'admin') {
+                        currentUser.name = newName;
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        applyUserRole();
+                    }
+                }
+                
+                closeEditUserModal();
+                
+                let msg = `✅ تم تحديث بيانات ${oldName}`;
+                if (newPassword) msg += ' (الاسم + الباسورد)';
+                else msg += ' (الاسم فقط)';
+                showAlert(msg, 'success');
+                
+            } catch (error) {
+                console.error('Error updating user:', error);
+                showAlert('حدث خطأ: ' + error.message, 'danger');
+            }
+        };
+
+        // ================================
+        // 📊 التقارير (للجميع)
+        // ================================
+        window.openReportsModal = function() {
+            if (!currentUser) {
+                showAlert('يرجى تسجيل الدخول', 'warning');
+                return;
+            }
+            document.getElementById('reports-modal').classList.add('active');
+            renderReports();
+        };
+
+        window.closeReportsModal = function() {
+            document.getElementById('reports-modal').classList.remove('active');
+        };
+
+        function renderReports() {
+            const container = document.getElementById('reports-container');
+            container.innerHTML = '';
+            
+            const reports = Object.keys(allArchive)
+                .map(id => ({ id, ...allArchive[id] }))
+                .sort((a, b) => b.timestamp - a.timestamp);
+            
+            if (reports.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">لا توجد تقارير محفوظة بعد</div><div style="font-size:13px;color:var(--text-muted);margin-top:8px;">التقارير تُحفظ تلقائياً عند تصفير العداد</div></div>';
+                return;
+            }
+            
+            reports.forEach(report => {
+                const date = new Date(report.timestamp);
+                const dateStr = date.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+                const settlement = report.settlement || [];
+                
+                const card = document.createElement('div');
+                card.className = 'report-card';
+                
+                let settlementHtml = '';
+                if (settlement.length === 0) {
+                    settlementHtml = '<div style="text-align:center;padding:12px;color:var(--color-success);">✅ كانت الحسابات متوازنة</div>';
+                } else {
+                    settlement.forEach((s, i) => {
+                        settlementHtml += `
+                            <div class="report-settle-row">
+                                <span class="report-settle-num">${i + 1}</span>
+                                <div class="report-settle-names">
+                                    <strong>${s.fromName}</strong>
+                                    <span class="report-arrow">←</span>
+                                    <strong>${s.toName}</strong>
+                                </div>
+                                <div class="report-settle-amount">${parseFloat(s.amount).toFixed(2)} <span>ج.م</span></div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                card.innerHTML = `
+                    <div class="report-header" onclick="toggleReport('${report.id}')">
+                        <div>
+                            <div class="report-name">📅 ${report.periodName || 'دورة'}</div>
+                            <div class="report-meta">${dateStr} • ${report.expensesCount || 0} عملية • ${parseFloat(report.totalExpenses || 0).toFixed(2)} ج.م</div>
+                        </div>
+                        <span class="report-chevron" id="report-chevron-${report.id}">◀</span>
+                    </div>
+                    <div class="report-body" id="report-body-${report.id}" style="display:none;">
+                        <div class="report-section-title">💰 التسوية النهائية (من يدفع لمين):</div>
+                        ${settlementHtml}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.toggleReport = function(reportId) {
+            const body = document.getElementById(`report-body-${reportId}`);
+            const chevron = document.getElementById(`report-chevron-${reportId}`);
+            if (!body) return;
+            const isHidden = body.style.display === 'none';
+            body.style.display = isHidden ? 'block' : 'none';
+            if (chevron) chevron.textContent = isHidden ? '▼' : '◀';
+        };
+
+        // حساب التسوية الكاملة لكل الأطراف (للتقارير - الأدمن)
+        function computeFullSettlement() {
+            const pairDebts = {};
+            function addDebt(debtorId, creditorId, amount) {
+                if (!debtorId || !creditorId || debtorId === creditorId || amount <= 0) return;
+                if (!pairDebts[debtorId]) pairDebts[debtorId] = {};
+                if (!pairDebts[debtorId][creditorId]) pairDebts[debtorId][creditorId] = 0;
+                pairDebts[debtorId][creditorId] += amount;
+            }
+            
+            // المصاريف
+            Object.keys(allExpenses).forEach(id => {
+                const e = allExpenses[id];
+                const amount = parseFloat(e.amount) || 0;
+                const payer = e.paidBy;
+                const parts = e.participants || [];
+                if (Array.isArray(parts)) {
+                    const share = amount / parts.length;
+                    parts.forEach(p => { if (p !== payer) addDebt(p, payer, share); });
+                } else {
+                    Object.keys(parts).forEach(p => {
+                        if (p !== payer) addDebt(p, payer, parseFloat(parts[p]) || 0);
+                    });
+                }
+            });
+            
+            // الصافي بين كل طرفين
+            const settlements = [];
+            const done = {};
+            Object.keys(pairDebts).forEach(a => {
+                Object.keys(pairDebts[a]).forEach(b => {
+                    const key = [a, b].sort().join('|');
+                    if (done[key]) return;
+                    done[key] = true;
+                    const aToB = (pairDebts[a] && pairDebts[a][b]) || 0;
+                    const bToA = (pairDebts[b] && pairDebts[b][a]) || 0;
+                    const net = aToB - bToA;
+                    if (Math.abs(net) < 0.01) return;
+                    if (net > 0) {
+                        settlements.push({ fromName: allUsers[a]?.name || '؟', toName: allUsers[b]?.name || '؟', amount: net });
+                    } else {
+                        settlements.push({ fromName: allUsers[b]?.name || '؟', toName: allUsers[a]?.name || '؟', amount: -net });
+                    }
+                });
+            });
+            settlements.sort((x, y) => y.amount - x.amount);
+            return settlements;
+        }
+
+        window.confirmReset = async function(event) {
+            event.preventDefault();
+            
+            const periodName = document.getElementById('reset-period-name').value;
+            const password = document.getElementById('reset-confirm-password').value;
+            const passwordHash = await hashPassword(password);
+            
+            if (passwordHash !== ADMIN_PASSWORD_HASH) {
+                showAlert('رقم Admin غير صحيح!', 'danger');
+                return;
+            }
+            
+            // حساب التسوية الكاملة قبل التصفير
+            const settlement = computeFullSettlement();
+            const totalExpenses = Object.values(allExpenses).reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+            
+            // حفظ الأرشيف (تقرير الدورة)
+            const archiveRef = ref(db, groupPath(`archive/${Date.now()}`));
+            await set(archiveRef, {
+                periodName: periodName,
+                timestamp: Date.now(),
+                totalExpenses: totalExpenses,
+                expensesCount: Object.keys(allExpenses).length,
+                settlement: settlement,
+                users: allUsers,
+                expenses: allExpenses,
+                loans: {}
+            });
+            
+            // تصفير كل حاجة: المصاريف والسلف (دورة جديدة نظيفة)
+            await set(ref(db, groupPath('expenses')), {});
+            await set(ref(db, 'loans'), {});
+            
+            closeResetModal();
+            showAlert('تم تصفير العداد وحفظ تقرير الدورة بنجاح! 🎉', 'success');
+        };
+
+        // ================================
+        // 🔄 طي وفرد الأقسام
+        // ================================
+        window.toggleSection = function(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const button = document.getElementById('toggle-' + sectionId);
+            
+            if (!content || !button) return;
+            
+            const isCollapsed = content.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                // فرد القسم
+                content.classList.remove('collapsed');
+                button.textContent = '▲ إخفاء';
+                localStorage.setItem(sectionId + '-state', 'expanded');
+            } else {
+                // طي القسم
+                content.classList.add('collapsed');
+                button.textContent = '▼ عرض';
+                localStorage.setItem(sectionId + '-state', 'collapsed');
+            }
+        };
+
+        // استعادة حالة الأقسام عند التحميل
+        function restoreSectionsState() {
+            const sections = ['expenses-log'];
+            
+            sections.forEach(sectionId => {
+                const savedState = localStorage.getItem(sectionId + '-state');
+                const content = document.getElementById(sectionId + '-content');
+                const button = document.getElementById('toggle-' + sectionId);
+                
+                if (content && button) {
+                    // الحالة الافتراضية: مطوي
+                    if (savedState === 'expanded') {
+                        content.classList.remove('collapsed');
+                        button.textContent = '▲ إخفاء';
+                    } else {
+                        content.classList.add('collapsed');
+                        button.textContent = '▼ عرض';
+                    }
+                }
+            });
+        }
+
+        // ================================
+        // 🎨 الثيم
+        // ================================
+        window.toggleTheme = function() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            const icon = document.querySelector('.theme-toggle');
+            icon.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+        };
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
+        document.querySelector('.theme-toggle').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+
+        // ================================
+        // 🎭 المودالز
+        // ================================
+        window.openFirebaseConfigModal = function() {
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            
+            // ملء الحقول بالقيم الحالية
+            if (isAdmin) {
+                document.getElementById('config-adminName').value = window.adminName || DEFAULT_ADMIN_NAME;
+            } else {
+                document.getElementById('config-adminName-readonly').value = window.adminName || DEFAULT_ADMIN_NAME;
+            }
+            
+            // ملء حقول Firebase من القيم المحفوظة أو الافتراضية
+            if (!document.getElementById('config-apiKey').value) {
+                document.getElementById('config-apiKey').value = DEFAULT_FIREBASE_CONFIG.apiKey;
+                document.getElementById('config-authDomain').value = DEFAULT_FIREBASE_CONFIG.authDomain;
+                document.getElementById('config-databaseURL').value = DEFAULT_FIREBASE_CONFIG.databaseURL;
+                document.getElementById('config-projectId').value = DEFAULT_FIREBASE_CONFIG.projectId;
+                document.getElementById('config-storageBucket').value = DEFAULT_FIREBASE_CONFIG.storageBucket;
+                document.getElementById('config-messagingSenderId').value = DEFAULT_FIREBASE_CONFIG.messagingSenderId;
+                document.getElementById('config-appId').value = DEFAULT_FIREBASE_CONFIG.appId;
+            }
+            
+            // جعل الحقول readonly للمستخدمين
+            const readonlyForUsers = !isAdmin;
+            document.getElementById('config-apiKey').readOnly = readonlyForUsers;
+            document.getElementById('config-authDomain').readOnly = readonlyForUsers;
+            document.getElementById('config-databaseURL').readOnly = readonlyForUsers;
+            document.getElementById('config-projectId').readOnly = readonlyForUsers;
+            document.getElementById('config-storageBucket').readOnly = readonlyForUsers;
+            document.getElementById('config-messagingSenderId').readOnly = readonlyForUsers;
+            document.getElementById('config-appId').readOnly = readonlyForUsers;
+            
+            document.getElementById('firebase-config-modal').classList.add('active');
+        };
+
+        window.closeFirebaseConfigModal = function() {
+            document.getElementById('firebase-config-modal').classList.remove('active');
+        };
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // ================================
+        // ⚠️ التنبيهات
+        // ================================
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alerts-container');
+            
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            
+            const icons = {
+                success: '✅',
+                warning: '⚠️',
+                danger: '❌',
+                info: 'ℹ️'
+            };
+            
+            alert.innerHTML = `
+                <span class="alert-icon">${icons[type]}</span>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => alert.remove(), 300);
+            }, 4000);
+        }
+
+        window.showAlert = showAlert;
+
+        // ================================
+        // ⬆️ زر الرجوع لأعلى
+        // ================================
+        (function() {
+            const btn = document.createElement('button');
+            btn.className = 'scroll-top-btn';
+            btn.innerHTML = '↑';
+            btn.title = 'العودة للأعلى';
+            btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.body.appendChild(btn);
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 400) btn.classList.add('visible');
+                else btn.classList.remove('visible');
+            }, { passive: true });
+        })();
+
+        // ================================
+        // 📱 تسجيل Service Worker (PWA)
+        // ================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(() => console.log('✅ Service Worker registered'))
+                    .catch(err => console.log('SW registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
